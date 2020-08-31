@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>262083587265-t7i347cev8f8a2irk62a4l0dug9stabu.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.262083587265-t7i347cev8f8a2irk62a4l0dug9stabu</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAn1ai6CID6IHbgMqy4blpzYMC09fwuI_8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>262083587265</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.rsleader.Registrator</string>
+	<key>PROJECT_ID</key>
+	<string>registrator-3c860</string>
+	<key>STORAGE_BUCKET</key>
+	<string>registrator-3c860.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:262083587265:ios:4971c36738041cdcf7f840</string>
+	<key>DATABASE_URL</key>
+	<string>https://registrator-3c860.firebaseio.com</string>
+</dict>
+</plist>
