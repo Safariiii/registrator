@@ -11,7 +11,14 @@ import UIKit
 class MakeIPViewController: UIViewController {
     
     let tableView = UITableView()
-    var makeIPViewModel: MakeIPViewModel?
+    var makeIPViewModel: MakeIPViewModel? {
+        didSet {
+            if let viewModel = makeIPViewModel {
+                initViewModel()
+            }
+            
+        }
+    }
     let animations = Animations()
     let mask = Mask()
     var isNew: Bool?
@@ -21,16 +28,30 @@ class MakeIPViewController: UIViewController {
     let newView = UIView()
     let okvedTableView = UITableView()
     let okvedMainView = UIView()
-    let okvedDoneButton = UIButton()
     let searchBar = UISearchBar()
     
-    var documentID: String? {
-        didSet {
-            if let isnew = isNew {
-                makeIPViewModel = MakeIPViewModel(id: documentID!, isNew: isnew, tableView: tableView, viewController: self)
-            }
-        }
-    }
+    lazy var okvedDoneButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.bottomAnchor.constraint(equalTo: okvedMainView.safeAreaLayoutGuide.bottomAnchor, constant: -40).isActive = true
+        button.centerXAnchor.constraint(equalTo: okvedMainView.centerXAnchor).isActive = true
+        button.widthAnchor.constraint(equalToConstant: 220).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        button.layer.cornerRadius = 7
+        button.backgroundColor = .red
+        button.setTitle("Готово", for: .normal)
+        button.addTarget(self, action: #selector(doneButtonPressed), for: .touchUpInside)
+        return button
+    }()
+    
+//    // вынести во вьюмодель
+//    var documentID: String? {
+//        didSet {
+//            if let isnew = isNew {
+//                makeIPViewModel = MakeIPViewModel(id: documentID!, isNew: isnew, tableView: tableView, viewController: self)
+//            }
+//        }
+//    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +59,16 @@ class MakeIPViewController: UIViewController {
         if isNew ?? true {
             documentMaster.setupHelpView(parentView: view)
         }
+    }
+    
+    func initViewModel() {
+        guard let viewModel = makeIPViewModel else {
+            return
+        }
+        viewModel.reloadHandler = { [weak self] in
+            self?.tableView.reloadData()
+        }
+        
     }
     
     func setupTableView() {
@@ -180,16 +211,9 @@ extension MakeIPViewController: UITableViewDelegate {
         okvedTableView.register(OkvedTableViewCell.self, forCellReuseIdentifier: "okvedTableViewCell")
         okvedTableView.delegate = self
         okvedTableView.dataSource = self
+        
         okvedMainView.addSubview(okvedDoneButton)
-        okvedDoneButton.translatesAutoresizingMaskIntoConstraints = false
-        okvedDoneButton.bottomAnchor.constraint(equalTo: okvedMainView.safeAreaLayoutGuide.bottomAnchor, constant: -40).isActive = true
-        okvedDoneButton.centerXAnchor.constraint(equalTo: okvedMainView.centerXAnchor).isActive = true
-        okvedDoneButton.widthAnchor.constraint(equalToConstant: 220).isActive = true
-        okvedDoneButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        okvedDoneButton.layer.cornerRadius = 7
-        okvedDoneButton.backgroundColor = .red
-        okvedDoneButton.setTitle("Готово", for: .normal)
-        okvedDoneButton.addTarget(self, action: #selector(doneButtonPressed), for: .touchUpInside)
+
     }
     
     @objc func doneButtonPressed() {

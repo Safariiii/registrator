@@ -44,9 +44,17 @@ class ViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "makeIP" {
-            let destinationVC = segue.destination as! MakeIPViewController
-            destinationVC.isNew = true
-            destinationVC.documentID = ipManagerID
+            if let destinationVC = segue.destination as? MakeIPViewController {
+                
+                destinationVC.isNew = true
+                //destinationVC.documentID = ipManagerID
+                destinationVC.makeIPViewModel = MakeIPViewModel(id: ipManagerID ?? "0", isNew: true)
+                if let vc = UIStoryboard(name: "main", bundle: nil).instantiateViewController(withIdentifier: "MakeIPViewController") as? MakeIPViewController,
+                    let nc = self.navigationController {
+                    //vc.makeIPViewModel = MakeIPViewModel(
+                    nc.pushViewController(vc, animated: true)
+                }
+            }
         } else if segue.identifier == "openIP" {
             let destinationVC = segue.destination as! MakeIPViewController
             destinationVC.isNew = false
