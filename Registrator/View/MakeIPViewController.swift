@@ -275,16 +275,18 @@ extension MakeIPViewController: UITableViewDataSource {
 
 extension MakeIPViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
+        print(1)
         guard let viewModel = makeIPViewModel else { return }
         if let text = textField.text, text != "" {
             viewModel.setTextFieldInfo(text: text, index: textField.tag)
-            tableView.reloadData()
+//            tableView.reloadData()
         } else {
             animations.animateTextLabels(textField: textField, y: 0, tableView: tableView)
         }
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        print(2)
         animations.animateTextLabels(textField: textField, y: -20, tableView: tableView)
         guard let viewModel = makeIPViewModel else { return }
         mask.setupMask(textField: textField, tag: textField.tag, section: viewModel.currentSection)
