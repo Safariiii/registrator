@@ -43,7 +43,6 @@ class ViewController: UIViewController {
             print(text)
           }
         }
-        
     }
 
     
