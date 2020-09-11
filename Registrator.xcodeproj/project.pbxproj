@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+<<<<<<< HEAD
 		5600BF852500192200453C22 /* String+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5600BF842500192200453C22 /* String+extensions.swift */; };
+=======
+		5600BF822500004600453C22 /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5600BF812500004600453C22 /* DocumentView.swift */; };
+>>>>>>> denver
 		A0339BD024C9EC710082F693 /* MakeIPViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0339BCF24C9EC710082F693 /* MakeIPViewModel.swift */; };
 		A0339BD224CA01EC0082F693 /* MakIPCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0339BD124CA01EB0082F693 /* MakIPCellViewModel.swift */; };
 		A0339BD424CA3D330082F693 /* IP.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0339BD324CA3D330082F693 /* IP.swift */; };
@@ -42,7 +46,11 @@
 
 /* Begin PBXFileReference section */
 		46961B5A215A9634822059D9 /* Pods_Registrator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Registrator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+<<<<<<< HEAD
 		5600BF842500192200453C22 /* String+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+extensions.swift"; sourceTree = "<group>"; };
+=======
+		5600BF812500004600453C22 /* DocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentView.swift; sourceTree = "<group>"; };
+>>>>>>> denver
 		A0339BCF24C9EC710082F693 /* MakeIPViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeIPViewModel.swift; sourceTree = "<group>"; };
 		A0339BD124CA01EB0082F693 /* MakIPCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakIPCellViewModel.swift; sourceTree = "<group>"; };
 		A0339BD324CA3D330082F693 /* IP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IP.swift; sourceTree = "<group>"; };
@@ -90,12 +98,39 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+<<<<<<< HEAD
 		5600BF832500190000453C22 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
 				5600BF842500192200453C22 /* String+extensions.swift */,
 			);
 			path = Extensions;
+=======
+		5679ACE624FFFCB700D9A069 /* MVVM */ = {
+			isa = PBXGroup;
+			children = (
+				5679ACE824FFFFBA00D9A069 /* Views */,
+				5679ACE724FFFCCE00D9A069 /* MakeIPView */,
+			);
+			path = MVVM;
+			sourceTree = "<group>";
+		};
+		5679ACE724FFFCCE00D9A069 /* MakeIPView */ = {
+			isa = PBXGroup;
+			children = (
+				A0E2D54B249627A600421B78 /* MakeIPViewController.swift */,
+				A0339BCF24C9EC710082F693 /* MakeIPViewModel.swift */,
+			);
+			path = MakeIPView;
+			sourceTree = "<group>";
+		};
+		5679ACE824FFFFBA00D9A069 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5600BF812500004600453C22 /* DocumentView.swift */,
+			);
+			path = Views;
+>>>>>>> denver
 			sourceTree = "<group>";
 		};
 		A0C29FD824C9EA5E00A202B8 /* Model */ = {
@@ -117,7 +152,6 @@
 		A0C29FD924C9EA6C00A202B8 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				A0339BCF24C9EC710082F693 /* MakeIPViewModel.swift */,
 				A0339BD124CA01EB0082F693 /* MakIPCellViewModel.swift */,
 				A0AA563A24D1A9B200AD6421 /* ChooseDocumentViewModel.swift */,
 				A0AA563C24D1AEA100AD6421 /* ChooseDocumentCellViewModel.swift */,
@@ -131,7 +165,6 @@
 			isa = PBXGroup;
 			children = (
 				A0E2D53B2496269100421B78 /* ViewController.swift */,
-				A0E2D54B249627A600421B78 /* MakeIPViewController.swift */,
 				A0E2D54D2497C4D400421B78 /* MakeIPTableViewCell.swift */,
 				A0AA563824D1A87600AD6421 /* ChooseDocumentViewControllerCell.swift */,
 				A0E9769224E4144600E8BB24 /* OkvedTableViewCell.swift */,
@@ -171,7 +204,11 @@
 		A0E2D5362496269100421B78 /* Registrator */ = {
 			isa = PBXGroup;
 			children = (
+<<<<<<< HEAD
 				5600BF832500190000453C22 /* Extensions */,
+=======
+				5679ACE624FFFCB700D9A069 /* MVVM */,
+>>>>>>> denver
 				A0CFD7B124CD820A00243FF5 /* Protocols */,
 				A0C29FDA24C9EA7400A202B8 /* View */,
 				A0C29FD924C9EA6C00A202B8 /* ViewModel */,
@@ -339,6 +376,7 @@
 				A0E1CF0424EBC9FA00241C4B /* OKVED.swift in Sources */,
 				A0E2D54C249627A600421B78 /* MakeIPViewController.swift in Sources */,
 				A0339BD824CB48670082F693 /* Animations.swift in Sources */,
+				5600BF822500004600453C22 /* DocumentView.swift in Sources */,
 				A0AA563F24D1E56D00AD6421 /* Document.swift in Sources */,
 				A0339BD024C9EC710082F693 /* MakeIPViewModel.swift in Sources */,
 				A0E9768B24E3278B00E8BB24 /* OkvedTableViewViewModel.swift in Sources */,

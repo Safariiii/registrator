@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import UIKit
+//import UIKit
 import Firebase
 
 class MakeIPViewModel {
@@ -22,13 +22,15 @@ class MakeIPViewModel {
     var okvedDelegate: OkvedDelegate?
     private var viewController: UIViewController
     
+    var reloadHandler: (() -> Void)?
+    // вынести во вьюмодель
     
     init(id: String, isNew: Bool, tableView: UITableView, viewController: UIViewController) {
         self.id = id
         self.isNew = isNew
-        self.tableView = tableView
+        //self.tableView = tableView
         self.ipManager = DocumentManager(id: id)
-        self.viewController = viewController
+        //self.viewController = viewController
         db = Firestore.firestore()
         self.okvedDelegate = self.viewController as? OkvedDelegate
         
@@ -72,7 +74,8 @@ class MakeIPViewModel {
         }
         stepsLabelsArray[2] = kodes
         saveDocument()
-        tableView.reloadData()
+        //tableView.reloadData()
+        reloadHandler?()
     }
     
     private func createTextFields(id: String) {
@@ -112,7 +115,8 @@ class MakeIPViewModel {
                     okvedsToDisplay.append("\(item.key). \(item.value)")
                 }
                 self.stepsLabelsArray[2] = okvedsToDisplay
-                self.tableView.reloadData()
+                //self.tableView.reloadData()
+                self.reloadHandler?()
                 self.okvedDelegate?.setupViewModel()
             }
         }
@@ -158,7 +162,8 @@ class MakeIPViewModel {
                 giveMethod = "По доверенности"
             }
             saveDocument()
-            self.tableView.reloadData()
+            //self.tableView.reloadData()
+            reloadHandler?()
         }
     }
     
