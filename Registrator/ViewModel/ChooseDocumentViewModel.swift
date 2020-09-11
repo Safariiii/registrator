@@ -14,14 +14,10 @@ class ChooseDocumentViewModel {
 //    private var documentManager: DocumentManager
     private let db: Firestore
     var documents: [Document] = []
-    var tableView: UITableView
-    var parentViewController: UIViewController
     var chosenDocument: Int?
     
-    init(tableView: UITableView, parentViewController: UIViewController) {
-        self.tableView = tableView
+    init() {
         db = Firestore.firestore()
-        self.parentViewController = parentViewController
         load()
     }
     

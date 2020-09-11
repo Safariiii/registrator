@@ -8,18 +8,9 @@
 
 import UIKit
 
-fileprivate let spaceCode = -92
+
 
 struct Mask {
-    private func checkForBackspace(letter: String)->Bool {
-        if let char = letter.cString(using: String.Encoding.utf8) {
-            let isBackSpace = strcmp(char, "\\b")
-            return isBackSpace == -92
-        } else {
-            return false
-        }
-    }
-    
     private func validateMaskForINN(textField: UITextField, letter: String) {
         if !letter.isBackspace {
             if textField.text!.count == 4 {
@@ -31,7 +22,7 @@ struct Mask {
     }
     
     private func validateMaskForSNILS(textField: UITextField, letter: String) {
-        if !checkForBackspace(letter: letter) {
+        if !letter.isBackspace {
             if textField.text!.count == 3 {
                 textField.text?.insert(contentsOf: " ", at: textField.text!.endIndex)
             } else if textField.text!.count == 7 {
@@ -43,7 +34,7 @@ struct Mask {
     }
     
     private func validateMaskForPassportCode(textField: UITextField, letter: String) {
-        if !checkForBackspace(letter: letter) {
+        if !letter.isBackspace {
             if textField.text!.count == 3 {
                 textField.text?.insert(contentsOf: "-", at: textField.text!.endIndex)
             }
@@ -55,14 +46,14 @@ struct Mask {
             if Int(letter) != nil {
                 return true
             } else {
-                return checkForBackspace(letter: letter)
+                return letter.isBackspace
             }
         }
-        return checkForBackspace(letter: letter)
+        return letter.isBackspace
     }
     
     private func validatePhoneNumber(textField: UITextField, letter: String) -> Bool {
-        if !checkForBackspace(letter: letter) {
+        if !letter.isBackspace {
             while textField.text!.count  + 1 < 18 {
                 if Int(letter) != nil {
                     if textField.text?.count == 7 {
@@ -95,8 +86,6 @@ struct Mask {
     }
     
     func validateTextField(textField: UITextField, letter: String, section: Int) -> Bool {
-        
-        
         if section == 0 {
             if textField.tag == 7 {
                 return validatePhoneNumber(textField: textField, letter: letter)

@@ -21,7 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: scene)
         if let vc = UIStoryboard(name: "Main", bundle: nil)
             .instantiateViewController(withIdentifier: "ViewController") as? ViewController {
-            //vc.viewModel = ChooseDocumentViewModel(tableView: /, parentViewController: /)
+            vc.viewModel = ChooseDocumentViewModel()
             let nc = UINavigationController(rootViewController: vc)
             window?.rootViewController = nc
             window?.makeKeyAndVisible()

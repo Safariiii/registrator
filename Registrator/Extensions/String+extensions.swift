@@ -8,6 +8,8 @@
 
 import Foundation
 
+fileprivate let spaceCode = -92
+
 extension String {
     var isBackspace: Bool {
         if let char = self.cString(using: .utf8) {

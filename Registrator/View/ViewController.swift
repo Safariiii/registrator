@@ -20,7 +20,6 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         makeIPButton.layer.cornerRadius = 8
-        viewModel = ChooseDocumentViewModel(tableView: tableView, parentViewController: self)
         setupTableView()
         okvedManager.checkForUpdates(view: view)
     }
