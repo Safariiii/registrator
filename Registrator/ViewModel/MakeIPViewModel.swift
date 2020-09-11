@@ -41,6 +41,10 @@ class MakeIPViewModel {
         }
     }
     
+    func getManager() -> DocumentManager {
+        return ipManager
+    }
+    
     func nextButtonPressed() {
         if currentSection + 1 < headersLabelsArray.count {
             currentSection += 1

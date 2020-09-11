@@ -11,4 +11,8 @@ import Foundation
 struct OKVED {
     let kod: String
     let descr: String
+    
+    var allInfo: String {
+        return "\(kod) \(descr)"
+    }
 }

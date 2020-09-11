@@ -18,7 +18,7 @@ class DocumentManager {
         self.id = id
     }
     
-    func saveDocument(textFields: [[String]], id: String, okveds: [String : String]?, giveMethod: String) {
+    func saveDocument(textFields: [[String]], id: String, okveds: [String : String]?, giveMethod: String) {        
         db.collection("documents").document("CurrentUser").collection("IP").document(id).setData(
             [
                 "lastName" : textFields[0][0],

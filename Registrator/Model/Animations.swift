@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 struct Animations {
     func animateTextLabels(textField: UITextField, y: CGFloat, tableView: UITableView) {
         guard let superview = textField.superview as? MakeIPTableViewCell else { return }

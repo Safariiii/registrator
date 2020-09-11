@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5600BF852500192200453C22 /* String+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5600BF842500192200453C22 /* String+extensions.swift */; };
 		A0339BD024C9EC710082F693 /* MakeIPViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0339BCF24C9EC710082F693 /* MakeIPViewModel.swift */; };
 		A0339BD224CA01EC0082F693 /* MakIPCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0339BD124CA01EB0082F693 /* MakIPCellViewModel.swift */; };
 		A0339BD424CA3D330082F693 /* IP.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0339BD324CA3D330082F693 /* IP.swift */; };
@@ -41,6 +42,7 @@
 
 /* Begin PBXFileReference section */
 		46961B5A215A9634822059D9 /* Pods_Registrator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Registrator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5600BF842500192200453C22 /* String+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+extensions.swift"; sourceTree = "<group>"; };
 		A0339BCF24C9EC710082F693 /* MakeIPViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeIPViewModel.swift; sourceTree = "<group>"; };
 		A0339BD124CA01EB0082F693 /* MakIPCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakIPCellViewModel.swift; sourceTree = "<group>"; };
 		A0339BD324CA3D330082F693 /* IP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IP.swift; sourceTree = "<group>"; };
@@ -88,6 +90,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5600BF832500190000453C22 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				5600BF842500192200453C22 /* String+extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		A0C29FD824C9EA5E00A202B8 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -161,6 +171,7 @@
 		A0E2D5362496269100421B78 /* Registrator */ = {
 			isa = PBXGroup;
 			children = (
+				5600BF832500190000453C22 /* Extensions */,
 				A0CFD7B124CD820A00243FF5 /* Protocols */,
 				A0C29FDA24C9EA7400A202B8 /* View */,
 				A0C29FD924C9EA6C00A202B8 /* ViewModel */,
@@ -322,6 +333,7 @@
 				A0AA563D24D1AEA100AD6421 /* ChooseDocumentCellViewModel.swift in Sources */,
 				A05F45A924CDF59100C67E20 /* Mask.swift in Sources */,
 				A0339BD424CA3D330082F693 /* IP.swift in Sources */,
+				5600BF852500192200453C22 /* String+extensions.swift in Sources */,
 				A0E1CF0824F9063C00241C4B /* OkvedDelegate.swift in Sources */,
 				A0E9769324E4144600E8BB24 /* OkvedTableViewCell.swift in Sources */,
 				A0E1CF0424EBC9FA00241C4B /* OKVED.swift in Sources */,

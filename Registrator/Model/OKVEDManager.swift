@@ -75,9 +75,12 @@ class OKVEDManager {
         }
     }
 
+    var request: DataRequest?
     private func getOkveds() {
         let url = "https://apidata.mos.ru/v1/datasets/2745/rows?api_key=6a83c5ad02350635629ea3628783ac90"
-        Alamofire.request(url, method: .get).responseJSON { (response) in
+        request = Alamofire.request(url, method: .get)
+            
+        request?.responseJSON { (response) in
             if response.result.isSuccess {
                 let jsonResponse = JSON(response.result.value!)
                 var counter = 1
@@ -108,8 +111,18 @@ class OKVEDManager {
             } else {
                 print(response)
             }
+            self.request = nil
+        }
+        request?.downloadProgress { (progress) in
+            DispatchQueue.main.async {
+                print(progress.fractionCompleted)
+                self.progressLabel.text = "Идет обновление данных. Прогресс: \(progress.fractionCompleted) * 100))%"
+            }
+            
         }
     }
+    
+    
     let refreshView = UIView()
     let progressLabel = UILabel()
     

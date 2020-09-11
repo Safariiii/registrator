@@ -8,8 +8,9 @@
 
 import UIKit
 
+fileprivate let spaceCode = -92
+
 struct Mask {
-    
     private func checkForBackspace(letter: String)->Bool {
         if let char = letter.cString(using: String.Encoding.utf8) {
             let isBackSpace = strcmp(char, "\\b")
@@ -20,7 +21,7 @@ struct Mask {
     }
     
     private func validateMaskForINN(textField: UITextField, letter: String) {
-        if !checkForBackspace(letter: letter) {
+        if !letter.isBackspace {
             if textField.text!.count == 4 {
                 textField.text?.insert(contentsOf: " ", at: textField.text!.endIndex)
             } else if textField.text!.count == 9 {
@@ -94,6 +95,8 @@ struct Mask {
     }
     
     func validateTextField(textField: UITextField, letter: String, section: Int) -> Bool {
+        
+        
         if section == 0 {
             if textField.tag == 7 {
                 return validatePhoneNumber(textField: textField, letter: letter)
@@ -101,6 +104,9 @@ struct Mask {
                 return true
             }
         } else {
+//            switch textField.tag {
+//            case 0:
+//            }
             if textField.tag == 0 {
                 return validateNumbers(textField: textField, letter: letter, num: 4)
             } else if textField.tag == 1 {
