@@ -114,9 +114,13 @@ class MakeIPViewModel {
                     self.chosenOkveds.append(okved)
                     okvedsToDisplay.append("\(item.key). \(item.value)")
                 }
-                self.stepsLabelsArray[2] = okvedsToDisplay
+
                 //self.tableView.reloadData()
-                self.reloadHandler?()
+                if okvedsToDisplay != [] {
+                    self.stepsLabelsArray[2] = okvedsToDisplay
+                }
+                 self.reloadHandler?()
+
                 self.okvedDelegate?.setupViewModel()
             }
         }

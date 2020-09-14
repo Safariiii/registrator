@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseFunctions
 
 class ViewController: UIViewController {
     
@@ -22,6 +23,25 @@ class ViewController: UIViewController {
         makeIPButton.layer.cornerRadius = 8
         setupTableView()
         okvedManager.checkForUpdates(view: view)
+        aaa()
+        
+    }
+    
+    func aaa() {
+        let functions = Functions.functions()
+        functions.httpsCallable("createDocument").call() { (result, error) in
+          if let error = error as NSError? {
+            if error.domain == FunctionsErrorDomain {
+//              let code = FunctionsErrorCode(rawValue: error.code)
+//              let message = error.localizedDescription
+//              let details = error.userInfo[FunctionsErrorDetailsKey]
+            }
+            // ...
+          }
+          if let text = result?.data {
+            print(text)
+          }
+        }
     }
 
     
