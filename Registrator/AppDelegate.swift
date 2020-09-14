@@ -21,6 +21,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        } catch {
 //            print(error.localizedDescription)
 //        }
+        
+        
+        
         FirebaseApp.configure()
         return true
     }
