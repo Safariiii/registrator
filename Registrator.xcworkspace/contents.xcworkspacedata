@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:functions/index.js">
+   </FileRef>
+   <FileRef
       location = "group:Registrator.xcodeproj">
    </FileRef>
    <FileRef
