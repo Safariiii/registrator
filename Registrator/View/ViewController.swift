@@ -68,6 +68,7 @@ class ViewController: UIViewController {
                 
                 destinationVC.isNew = true
                 //destinationVC.documentID = ipManagerID
+                //hello
                 destinationVC.makeIPViewModel = MakeIPViewModel(id: ipManagerID ?? "0", isNew: true)
                 if let vc = UIStoryboard(name: "main", bundle: nil).instantiateViewController(withIdentifier: "MakeIPViewController") as? MakeIPViewController,
                     let nc = self.navigationController {
