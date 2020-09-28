@@ -5,41 +5,37 @@
 //  Created by Руслан Сафаргалеев on 23.07.2020.
 //  Copyright © 2020 Руслан Сафаргалеев. All rights reserved.
 //
-
 import Foundation
-//import UIKit
-import Firebase
 
 class MakeIPViewModel {
     
     let id: String
-    private let ipManager: DocumentManager
     let isNew: Bool
-    var textFieldInfo: [[String]]
-    private let db: Firestore
-    private var tableView: UITableView
     var currentSection = 0
-    var okvedDelegate: OkvedDelegate?
-    private var viewController: UIViewController
-    
+    var newFile: File?
     var reloadHandler: (() -> Void)?
-    // вынести во вьюмодель
+    let firebaseManager = FirebaseManager()
+    var stepsLabelsArray: [[String]] = [["Фамилия: ", "Имя: ", "Отчество: ", "Пол: ", "Гражданство: ", "Дата рождения: ", "E-mail: ", "Номер телефона: "], ["Серия паспорта: ", "Номер паспорта: ", "Дата выдачи: ", "Кем выдан: ", "Код подразделения: ", "Место рождения: ", "Адрес регистрации: ", "ИНН: ", "СНИЛС: "], ["В данный момент нет добавленных кодов ОКВЭД"], ["Система нологообложения: ", "Ставка налогообложения: "], ["Лично", "По доверенности"]]
+     
+    private let headersLabelsArray = ["Шаг 1: Личная информация", "Шаг 2: Паспортные данные", "Шаг 3: ОКВЭД", "Шаг 4: Налогообложение", "Шаг 5: Способ подачи документов"]
     
-    init(id: String, isNew: Bool, tableView: UITableView, viewController: UIViewController) {
+    init(id: String, isNew: Bool) {
         self.id = id
         self.isNew = isNew
-        //self.tableView = tableView
-        self.ipManager = DocumentManager(id: id)
-        //self.viewController = viewController
-        db = Firestore.firestore()
-        self.okvedDelegate = self.viewController as? OkvedDelegate
-        
         if !isNew {
-            self.textFieldInfo = [["", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", "", ""], [], ["", ""]]
-            createTextFields(id: id)
+            createTextFields()
         } else {
-            self.textFieldInfo = [["", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", "", ""], [], ["", ""]]
-            self.okvedDelegate?.setupViewModel()
+            newFile = File()
+        }
+    }
+    
+    func createTextFields() {
+        firebaseManager.createTextFields(id: id) { (file, okveds) in
+            if okveds != [] {
+                self.stepsLabelsArray[2] = okveds
+            }
+            self.newFile = file
+            self.reloadHandler?()
         }
     }
     
@@ -55,91 +51,35 @@ class MakeIPViewModel {
         }
     }
     
-    var loadedOkveds: [String : String] = [:]
-    var chosenOkveds: [OKVED] = []
-    
     func setOkveds(okveds: [OKVED]) {
-        loadedOkveds = [:]
+        newFile?.okveds = []
         var kodes: [String] = []
+
         for i in 0..<okveds.count {
             let kod = okveds[i].kod
             let descr = okveds[i].descr
             let kodString = "\(kod). \(descr)"
             kodes.append(kodString)
-            loadedOkveds[kod] = descr
+            newFile?.okveds.append(okveds[i])
         }
         stepsLabelsArray[2] = kodes
         saveDocument()
-        //tableView.reloadData()
         reloadHandler?()
     }
     
-    private func createTextFields(id: String) {
-        db.collection("documents").document("CurrentUser").collection("IP").document(id).getDocument { (querySnapshot, error) in
-            
-            guard let snapshot = querySnapshot else {
-                print("Error retreiving snapshot: \(error!)")
-                return
-            }
-            if let data = snapshot.data() {
-                self.textFieldInfo = [[], [], [], []]
-                self.textFieldInfo[0].append(data["lastName"] as! String)
-                self.textFieldInfo[0].append(data["firstName"] as! String)
-                self.textFieldInfo[0].append(data["middleName"] as! String)
-                self.textFieldInfo[0].append(data["sex"] as! String)
-                self.textFieldInfo[0].append(data["citizenship"] as! String)
-                self.textFieldInfo[0].append(data["dateOfBirth"] as! String)
-                self.textFieldInfo[0].append(data["email"] as! String)
-                self.textFieldInfo[0].append(data["phoneNumber"] as! String)
-                self.textFieldInfo[1].append(data["passportSeries"] as! String)
-                self.textFieldInfo[1].append(data["passportNumber"] as! String)
-                self.textFieldInfo[1].append(data["passportDate"] as! String)
-                self.textFieldInfo[1].append(data["passportGiver"] as! String)
-                self.textFieldInfo[1].append(data["passportCode"] as! String)
-                self.textFieldInfo[1].append(data["placeOfBirth"] as! String)
-                self.textFieldInfo[1].append(data["address"] as! String)
-                self.textFieldInfo[1].append(data["inn"] as! String)
-                self.textFieldInfo[1].append(data["snils"] as! String)
-                self.textFieldInfo[3].append(data["taxesSystem"] as! String)
-                self.textFieldInfo[3].append(data["taxesRate"] as! String)
-                self.giveMethod = data["giveMethod"] as! String
-                self.loadedOkveds = data["okveds"] as! [String : String]
-                var okvedsToDisplay: [String] = []
-                for item in self.loadedOkveds {
-                    let okved = OKVED(kod: item.key, descr: item.value)
-                    self.chosenOkveds.append(okved)
-                    okvedsToDisplay.append("\(item.key). \(item.value)")
-                }
-
-                //self.tableView.reloadData()
-                if okvedsToDisplay != [] {
-                    self.stepsLabelsArray[2] = okvedsToDisplay
-                }
-                 self.reloadHandler?()
-
-                self.okvedDelegate?.setupViewModel()
-            }
-        }
-    }
-    
-    func titleForRowInPickerView(row: Int, pickerView: UIPickerView) -> String {
-        if currentSection == 0 {
+    func titleForRowInPickerView(row: Int, type: PickerViewType) -> String {
+        switch type {
+        case .genders:
             return Constants.genders[row]
-        } else if currentSection == 3 {
-            if pickerView.tag == 0 {
-                return Constants.taxes[row]
-            } else if pickerView.tag == 1 {
-                return Constants.taxesRate[row]
-            }
+        case .taxesSystem:
+            return Constants.taxes[row]
+        case .taxesRate:
+            return Constants.taxesRate[row]
+        default:
+            return "Ошибка"
         }
-        return "Ошибка"
     }
 
-    
-    private var stepsLabelsArray: [[String]] = [["Фамилия: ", "Имя: ", "Отчество: ", "Пол: ", "Гражданство: ", "Дата рождения: ", "E-mail: ", "Номер телефона: "], ["Серия паспорта: ", "Номер паспорта: ", "Дата выдачи: ", "Кем выдан: ", "Код подразделения: ", "Место рождения: ", "Адрес регистрации: ", "ИНН: ", "СНИЛС: "], ["В данный момент нет добавленных кодов ОКВЭД"], ["Система нологообложения: ", "Ставка налогообложения: "], ["Лично", "По доверенности"]]
-    
-    private let headersLabelsArray = ["Шаг 1: Личная информация", "Шаг 2: Паспортные данные", "Шаг 3: ОКВЭД", "Шаг 4: Налогообложение", "Шаг 5: Способ подачи документов"]
-    
     func numberOfSections() -> Int {
         return headersLabelsArray.count
     }
@@ -152,52 +92,54 @@ class MakeIPViewModel {
         }
     }
     
-    private var giveMethod = ""
-    
-    func didSelectRow(indexPath: IndexPath) {
+    func didSelectRow(index: Int) {
         if currentSection == 4 {
-            if indexPath.row == 0 {
-                giveMethod = "Лично"
-            } else if indexPath.row == 1 {
-                giveMethod = "По доверенности"
+            if index == 0 {
+                newFile?.giveMethod = "Лично"
+            } else if index == 1 {
+                newFile?.giveMethod = "По доверенности"
             }
             saveDocument()
-            //self.tableView.reloadData()
             reloadHandler?()
         }
+        if index == stepsLabelsArray[currentSection].count {
+            nextButtonPressed()
+            reloadHandler?()
+        } else if index == stepsLabelsArray[currentSection].count + 1 {
+            nextButtonPressed()
+            reloadHandler?()
+        }
+        
     }
     
-    func titleForHeaderInSection(section: Int) -> String {
+    func titleForHeaderInSection() -> String {
         return headersLabelsArray[currentSection]
     }
     
-    func cellViewModel(forIndexPath indexPath: IndexPath, viewController: UIViewController) -> MakIPCellViewModel? {
+    func cellViewModel(forIndexPath indexPath: IndexPath) -> MakIPCellViewModel? {
         
         var cellTitle = ""
         var cellText = ""
-        if indexPath.row < stepsLabelsArray[currentSection].count {
-            cellTitle = stepsLabelsArray[currentSection][indexPath.row]
-            if currentSection < 2 {
-                cellText = textFieldInfo[currentSection][indexPath.row]
-            } else if currentSection == 3 {
-                cellText = textFieldInfo[currentSection][indexPath.row]
+        let data = stepsLabelsArray[currentSection]
+        if indexPath.row < data.count {
+            cellTitle = data[indexPath.row]
+            if currentSection != 2 && currentSection != 4 {
+                if var newFile = newFile {
+                    cellText = newFile.cellText(title: cellTitle)
+                }
             }
-        } else if currentSection == 2 && indexPath.row == stepsLabelsArray[currentSection].count {
+        } else if currentSection == 2 && indexPath.row == data.count {
             cellTitle = "Кнопка добавить ОКВЭД"
         }
-        return MakIPCellViewModel(cellTitle: cellTitle, cellText: cellText, cellIndexPath: indexPath, viewController: viewController, currentSection: currentSection, giveMethod: giveMethod)
+        return MakIPCellViewModel(cellTitle: cellTitle, cellText: cellText, tag: indexPath.row, currentSection: currentSection, giveMethod: newFile?.giveMethod ?? "")
     }
     
-    func setTextFieldInfo(text: String, index: Int) {
-        textFieldInfo[currentSection][index] = text
+    func setTextFieldInfo(text: String, type: TextFieldType) {
+        newFile?.setTextField(text: text, type: type)
         saveDocument()
     }
     
     private func saveDocument() {
-        if stepsLabelsArray[2][0] != "В данный момент нет добавленных кодов ОКВЭД" {
-            ipManager.saveDocument(textFields: textFieldInfo, id: id, okveds: loadedOkveds, giveMethod: giveMethod)
-        } else {
-            ipManager.saveDocument(textFields: textFieldInfo, id: id, okveds: [:], giveMethod: giveMethod)
-        }
+        firebaseManager.saveDocumentToFirestore(file: newFile!, id: id, okveds: newFile?.okveds)
     }
 }

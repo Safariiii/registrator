@@ -7,8 +7,25 @@
 //
 
 import Foundation
+import RealmSwift
 
 struct OKVED {
     let kod: String
     let descr: String
+}
+
+class Class: Object {
+    @objc dynamic var code: String?
+    @objc dynamic var descr: String?
+    override static func primaryKey() -> String? {
+        return "code"
+    }
+    let codes = List<Code>()
+}
+
+class Code: Object {
+    @objc dynamic var code: String?
+    @objc dynamic var descr: String?
+    @objc dynamic var parentClassCode: String?
+    var parentClass = LinkingObjects(fromType: Class.self, property: "codes")
 }

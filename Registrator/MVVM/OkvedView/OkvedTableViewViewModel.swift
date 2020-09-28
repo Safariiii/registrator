@@ -6,35 +6,29 @@
 //  Copyright © 2020 Руслан Сафаргалеев. All rights reserved.
 //
 
-import UIKit
+import Foundation
 import RealmSwift
 
 class OkvedTableViewViewModel {
-    let okvedManager = OKVEDManager()
-    var codes: [OKVED] = []
     var openSection: Int?
-    let tableView: UITableView
     let realm = try! Realm()
     var selectedCodes: Results<Code>?
     var selectedSections: Results<Class>?
     var sectionsArray: [[String]] = []
     var selectedCodesArray: [Results<Code>] = []
-    var makeIPViewModel: MakeIPViewModel?
     var chosenCodes: [OKVED] = []
+    var reloadHandler: (() -> Void)?
+    var scrollToRow: ((_ indexPath: IndexPath) -> Void)?
     
-    init(tableView: UITableView, viewModel: MakeIPViewModel?) {
-        self.tableView = tableView
-        self.makeIPViewModel = viewModel
-        guard let ipViewModel = makeIPViewModel else { return }
-        chosenCodes = ipViewModel.chosenOkveds
-        
+    init(okveds: [OKVED]) {
+        chosenCodes = okveds
     }
     
     func titleForHeaderInSection(section: Int) -> String {
         if selectedSections != nil {
             return "\(sectionsArray[section][0]). \(sectionsArray[section][1])"
         } else {
-            return "\(okvedManager.okvedClasses[section][0]). \(okvedManager.okvedClasses[section][1])"
+            return "\(Constants.okvedClasses[section][0]). \(Constants.okvedClasses[section][1])"
         }
     }
     
@@ -42,7 +36,7 @@ class OkvedTableViewViewModel {
         if selectedSections != nil {
             return sectionsArray.count
         } else {
-            return okvedManager.okvedClasses.count
+            return Constants.okvedClasses.count
         }
     }
     
@@ -52,7 +46,7 @@ class OkvedTableViewViewModel {
         } else {
             if let openSec = openSection {
                 if section == openSec {
-                    return realm.object(ofType: Class.self, forPrimaryKey: okvedManager.okvedClasses[section][0])?.codes.count ?? 0
+                    return realm.object(ofType: Class.self, forPrimaryKey: Constants.okvedClasses[section][0])?.codes.count ?? 0
                 } else {
                     return 0
                 }
@@ -75,19 +69,21 @@ class OkvedTableViewViewModel {
         if selectedSections != nil {
             let kod = selectedCodesArray[indexPath.section][indexPath.row].code!
             let descr = selectedCodesArray[indexPath.section][indexPath.row].descr!
-            return OkvedCellViewModel(kod: kod, descr: descr, isChosen: checkIfCodeIsSelected(code: kod))
+            let text = "\(kod). \(descr)"
+            return OkvedCellViewModel(text: text, isChosen: checkIfCodeIsSelected(code: kod))
         } else {
             if let section = openSection {
-                let kod = (realm.object(ofType: Class.self, forPrimaryKey: okvedManager.okvedClasses[section][0])?.codes.sorted(byKeyPath: "code")[indexPath.row].code)!
-                let descr = (realm.object(ofType: Class.self, forPrimaryKey: okvedManager.okvedClasses[section][0])?.codes.sorted(byKeyPath: "code")[indexPath.row].descr)!
-                return OkvedCellViewModel(kod: kod, descr: descr, isChosen: checkIfCodeIsSelected(code: kod))
+                let kod = (realm.object(ofType: Class.self, forPrimaryKey: Constants.okvedClasses[section][0])?.codes.sorted(byKeyPath: "code")[indexPath.row].code)!
+                let descr = (realm.object(ofType: Class.self, forPrimaryKey: Constants.okvedClasses[section][0])?.codes.sorted(byKeyPath: "code")[indexPath.row].descr)!
+                let text = "\(kod). \(descr)"
+                return OkvedCellViewModel(text: text, isChosen: checkIfCodeIsSelected(code: kod))
             } else {
                 return nil
             }
         }
     }
     
-    func didSelectRow(indexPath: IndexPath, ipViewModel: MakeIPViewModel, tableView: UITableView) {
+    func didSelectRow(indexPath: IndexPath, ipViewModel: MakeIPViewModel) {
         if selectedSections != nil {
             let kod = selectedCodesArray[indexPath.section][indexPath.row].code!
             if checkIfCodeIsSelected(code: kod) {
@@ -98,36 +94,36 @@ class OkvedTableViewViewModel {
                 chosenCodes.append(newKod)
             }
             ipViewModel.setOkveds(okveds: chosenCodes)
-            tableView.reloadData()
+            reloadHandler?()
         } else {
-            let kod = (realm.object(ofType: Class.self, forPrimaryKey: okvedManager.okvedClasses[indexPath.section][0])?.codes.sorted(byKeyPath: "code")[indexPath.row].code)!
+            let kod = (realm.object(ofType: Class.self, forPrimaryKey: Constants.okvedClasses[indexPath.section][0])?.codes.sorted(byKeyPath: "code")[indexPath.row].code)!
             if checkIfCodeIsSelected(code: kod) {                
                 chosenCodes.removeAll (where: { $0.kod == kod })
             } else {
-                let descr = (realm.object(ofType: Class.self, forPrimaryKey: okvedManager.okvedClasses[indexPath.section][0])?.codes.sorted(byKeyPath: "code")[indexPath.row].descr)!
+                let descr = (realm.object(ofType: Class.self, forPrimaryKey: Constants.okvedClasses[indexPath.section][0])?.codes.sorted(byKeyPath: "code")[indexPath.row].descr)!
                 let newKod = OKVED(kod: kod, descr: descr)
                 chosenCodes.append(newKod)
             }
             ipViewModel.setOkveds(okveds: chosenCodes)
-            tableView.reloadData()
+            reloadHandler?()
         }
     }
     
     func getCodes(section: Int) {
         if openSection == section {
             openSection = nil
-            self.tableView.reloadData()
+            reloadHandler?()
         } else {
             openSection = section
-            self.tableView.reloadData()
-            self.tableView.scrollToRow(at: [section, 0], at: .top, animated: true)
+            reloadHandler?()
+            scrollToRow?([section, 0])
         }
     }
     
     func searchBarSearchButtonClicked(text: String) {
         selectedCodes = realm.objects(Code.self).filter("descr CONTAINS[cd] %@", text)
         selectedSections = realm.objects(Class.self).filter("SUBQUERY(codes, $code, $code.descr CONTAINS[cd] %@).@count > 0", text)
-        tableView.reloadData()
+        reloadHandler?()
     }
     
     func searchBarTextDidChange(text: String) {
@@ -146,7 +142,6 @@ class OkvedTableViewViewModel {
             selectedCodes = nil
             selectedSections = nil
         }
-        
-        tableView.reloadData()
+        reloadHandler?()
     }
 }

@@ -9,23 +9,23 @@ import UIKit
 
 class DocumentView: UIView {
 
-    let viewModel: DocumentViewModel
-    
-    let animations = Animations()
-    
     lazy var helpTextLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = .black
-        label.text = "Мастер подготовки документов"
-        label.font = UIFont.systemFont(ofSize: 21, weight: .semibold)
-        label.textAlignment = .center
-        label.numberOfLines = 0
+        let label = UILabel(text: "Мастер подготовки документов", textColor: .black, fontSize: 21, fontWeight: .semibold, alignment: .center)
         return label
     }()
     
-    init(viewModel: DocumentViewModel) {
-        self.viewModel = viewModel
+    lazy var secondHelpTextLabel: UILabel = {
+        let text = "Для успешной подготовки документов, введите необходимую информацию в Мастер подготовки документов. При заполнении паспортных данных вводите информацию точно также как она указана в паспорте (не используйте сокращений или других склонений)."
+        let label = UILabel(text: text, fontSize: 14, alignment: .justified)
+        return label
+    }()
+    
+    lazy var beginButton: UIButton = {
+        let button = UIButton(title: "Начать", titleColor: .white, backgroundColor: .red, action: #selector(beginButtonPressed), target: self, cornerRadius: 7)
+        return button
+    }()
+    
+    init() {
         super.init(frame: .zero)
         setupUI()
     }
@@ -35,59 +35,24 @@ class DocumentView: UIView {
     }
 
     func setupUI() {
+        backgroundColor = .white
         self.addSubview(helpTextLabel)
-        helpTextLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: -150).isActive = true
-        helpTextLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-        helpTextLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-
-        let secondHelpTextLabel = UILabel()
-        self.addSubview(secondHelpTextLabel)
-        secondHelpTextLabel.translatesAutoresizingMaskIntoConstraints = false
-        secondHelpTextLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
-        secondHelpTextLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10).isActive = true
-        secondHelpTextLabel.topAnchor.constraint(equalTo: helpTextLabel.bottomAnchor, constant: 15).isActive = true
-        secondHelpTextLabel.text = "Для успешной подготовки документов, введите необходимую информацию в Мастер подготовки документов. При заполнении паспортных данных вводите информацию точно также как она указана в паспорте (не используйте сокращений или других склонений)."
-        secondHelpTextLabel.textAlignment = .justified
-        secondHelpTextLabel.numberOfLines = 0
-        secondHelpTextLabel.font = UIFont.systemFont(ofSize: 14)
+        helpTextLabel.setupAnchors(top: nil, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor)
+        helpTextLabel.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -150).isActive = true
         
-        let beginButton = UIButton()
+        self.addSubview(secondHelpTextLabel)
+        secondHelpTextLabel.setupAnchors(top: helpTextLabel.bottomAnchor, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 15, left: 10, bottom: 0, right: -10))
+
         self.addSubview(beginButton)
-        beginButton.translatesAutoresizingMaskIntoConstraints = false
-        beginButton.topAnchor.constraint(equalTo: secondHelpTextLabel.bottomAnchor, constant: 35).isActive = true
-        beginButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 65).isActive = true
-        beginButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -65).isActive = true
-        beginButton.setTitle("Начать", for: .normal)
-        beginButton.setTitleColor(.white, for: .normal)
-        beginButton.backgroundColor = .red
-        beginButton.layer.cornerRadius = 7
-        beginButton.addTarget(self, action: #selector(beginButtonPressed), for: .touchUpInside)
+        beginButton.setupAnchors(top: secondHelpTextLabel.bottomAnchor, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 35, left: 65, bottom: 0, right: -65))
     }
     
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
-        guard let superview = superview else {
-            return
-        }
-        setupHelpView(parentView: superview)
+        self.fillSuperview()
     }
-       
-       func setupHelpView(parentView: UIView) {
-           //parentView.addSubview(self)
-           translatesAutoresizingMaskIntoConstraints = false
-           topAnchor.constraint(equalTo: parentView.topAnchor).isActive = true
-           leadingAnchor.constraint(equalTo: parentView.leadingAnchor).isActive = true
-           trailingAnchor.constraint(equalTo: parentView.trailingAnchor).isActive = true
-           bottomAnchor.constraint(equalTo: parentView.bottomAnchor).isActive = true
-           backgroundColor = .white
-       }
-       
-       @objc func beginButtonPressed() {
-           animations.hideHelpView(view: self)
-       }
-
-}
-
-class DocumentViewModel {
     
+    @objc func beginButtonPressed() {
+        self.hideAndRemoveViewFromSuperview()
+    }
 }
