@@ -10,7 +10,7 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
-    var window: UIWindow?
+    static var window: UIWindow?
     static var navigationController: UINavigationController?
 
 
@@ -19,12 +19,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let scene = (scene as? UIWindowScene) else { return }
-        window = UIWindow(windowScene: scene)
+        SceneDelegate.window = UIWindow(windowScene: scene)
         if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ViewController") as? ViewController {
             vc.viewModel = ChooseDocumentViewModel()
-            SceneDelegate.navigationController = UINavigationController(rootViewController: vc)
-            window?.rootViewController = SceneDelegate.navigationController
-            window?.makeKeyAndVisible()
+            SceneDelegate.navigationController = UINavigationController(rootViewController: vc)            
+            SceneDelegate.window?.rootViewController = SceneDelegate.navigationController
+            SceneDelegate.window?.makeKeyAndVisible()
         }
     }
 

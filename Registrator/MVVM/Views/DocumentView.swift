@@ -7,21 +7,39 @@
 
 import UIKit
 
+fileprivate let secondHelpText = NSLocalizedString(
+    "Для успешной подготовки документов, введите необходимую информацию в Мастер подготовки документов. При заполнении паспортных данных вводите информацию точно также как она указана в паспорте (не используйте сокращений или других склонений)."
+    , comment: "")
+
 class DocumentView: UIView {
+    
+    enum ConstantEnum: String {
+        case helpText = "Мастер подготовки документов"
+    }
+    
+    private struct Constant {
+        static let buttonTitle = "Начать"
+    }
 
     lazy var helpTextLabel: UILabel = {
-        let label = UILabel(text: "Мастер подготовки документов", textColor: .black, fontSize: 21, fontWeight: .semibold, alignment: .center)
+        let label = UILabel(text: ConstantEnum.helpText.rawValue, textColor: .black, fontSize: 21, fontWeight: .semibold, alignment: .center)
         return label
     }()
     
     lazy var secondHelpTextLabel: UILabel = {
-        let text = "Для успешной подготовки документов, введите необходимую информацию в Мастер подготовки документов. При заполнении паспортных данных вводите информацию точно также как она указана в паспорте (не используйте сокращений или других склонений)."
+        let text = secondHelpText
         let label = UILabel(text: text, fontSize: 14, alignment: .justified)
         return label
     }()
     
     lazy var beginButton: UIButton = {
-        let button = UIButton(title: "Начать", titleColor: .white, backgroundColor: .red, action: #selector(beginButtonPressed), target: self, cornerRadius: 7)
+        let button = UIButton(
+            title: Constant.buttonTitle,
+            titleColor: .white,
+            backgroundColor: .red,
+            action: #selector(beginButtonPressed),
+            target: self,
+            cornerRadius: 7)
         return button
     }()
     

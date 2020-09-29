@@ -42,6 +42,10 @@ class ChooseDocumentViewModel {
     }
     
     func showDocument(indexPath: IndexPath) {
+        // TODO: - router here
+        let documentId = indexPath.row == 0 ? nil : documents[indexPath.row].id
+        MakeIPRouter.showModule(documentId: documentId)
+        /*
         if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MakeIPViewController") as? MakeIPViewController, let nc = SceneDelegate.navigationController {
             if indexPath.row == 0 {
                 vc.makeIPViewModel = MakeIPViewModel(id: UUID().uuidString, isNew: true)
@@ -49,7 +53,7 @@ class ChooseDocumentViewModel {
                 vc.makeIPViewModel = MakeIPViewModel(id: documents[indexPath.row].id, isNew: false)
             }
             nc.pushViewController(vc, animated: true)
-        }
+        }*/
     }
     
     func deleteDocument(indexPath: IndexPath) {

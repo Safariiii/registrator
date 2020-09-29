@@ -10,6 +10,8 @@ import UIKit
 
 class MakIPCellViewModel {
     
+    var type: TextFieldType?
+    
     var cellTitle: String
     var cellText: String
     var tag: Int
@@ -22,6 +24,12 @@ class MakIPCellViewModel {
         self.cellText = cellText
         self.currentSection = currentSection
         self.accessoryType = giveMethod == cellTitle && giveMethod != "" ? .checkmark : .none
+        
+        
+    }
+    
+    func save(value: String) {
+        type?.save(value: value)
     }
     
     var cellType: cellType {

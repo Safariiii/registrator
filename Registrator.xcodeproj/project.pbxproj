@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5600BF822500004600453C22 /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5600BF812500004600453C22 /* DocumentView.swift */; };
+		56C6B51E252376E70061F4FD /* MakeIPRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C6B51D252376E70061F4FD /* MakeIPRouter.swift */; };
 		A0339BD024C9EC710082F693 /* MakeIPViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0339BCF24C9EC710082F693 /* MakeIPViewModel.swift */; };
 		A0339BD224CA01EC0082F693 /* MakIPCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0339BD124CA01EB0082F693 /* MakIPCellViewModel.swift */; };
 		A0339BD624CB42A60082F693 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0339BD524CB42A60082F693 /* Constants.swift */; };
@@ -52,6 +53,7 @@
 /* Begin PBXFileReference section */
 		46961B5A215A9634822059D9 /* Pods_Registrator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Registrator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5600BF812500004600453C22 /* DocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentView.swift; sourceTree = "<group>"; };
+		56C6B51D252376E70061F4FD /* MakeIPRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeIPRouter.swift; sourceTree = "<group>"; };
 		A0339BCF24C9EC710082F693 /* MakeIPViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeIPViewModel.swift; sourceTree = "<group>"; };
 		A0339BD124CA01EB0082F693 /* MakIPCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakIPCellViewModel.swift; sourceTree = "<group>"; };
 		A0339BD524CB42A60082F693 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 				A0339BD124CA01EB0082F693 /* MakIPCellViewModel.swift */,
 				A0E2D54B249627A600421B78 /* MakeIPViewController.swift */,
 				A0E2D54D2497C4D400421B78 /* MakeIPTableViewCell.swift */,
+				56C6B51D252376E70061F4FD /* MakeIPRouter.swift */,
 			);
 			path = MakeIPView;
 			sourceTree = "<group>";
@@ -379,6 +382,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A0CFD7B324CD825F00243FF5 /* DatePickerDelegate.swift in Sources */,
+				56C6B51E252376E70061F4FD /* MakeIPRouter.swift in Sources */,
 				A09A5A34251FB8CC00136EF8 /* makeIpSectionView.swift in Sources */,
 				A0E2D53C2496269100421B78 /* ViewController.swift in Sources */,
 				A09A5A3C251FD81A00136EF8 /* TextFieldView.swift in Sources */,

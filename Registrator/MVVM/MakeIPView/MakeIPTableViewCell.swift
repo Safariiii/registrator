@@ -25,6 +25,7 @@ class MakeIPTableViewCell: UITableViewCell {
     
     var cellSection: Int = 0
     var cellTag: Int = 0
+    var pickerHekper: PickerHelper?
     
     //MARK: - ViewModel
     
@@ -51,6 +52,10 @@ class MakeIPTableViewCell: UITableViewCell {
         }
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+    }
+    
     func setupCell(viewModel: MakIPCellViewModel) {
         let tableView = self.superview as! UITableView
         parentViewController = tableView.dataSource as? MakeIPViewController
@@ -122,6 +127,12 @@ class MakeIPTableViewCell: UITableViewCell {
     @objc func pickerButtonPressed(sender: UIButton) {
         if let view = parentViewController?.view {
             let pickerView = PickerView(tag: cellTag, section: cellSection)
+            
+            pickerHekper = PickerHelper(self)
+            pickerView.delegate = pickerHekper
+            pickerView.dataSource = pickerHekper
+            
+
             pickerView.delegate = parentViewController as? UIPickerViewDelegate
             pickerView.dataSource = parentViewController as? UIPickerViewDataSource
             view.addSubview(pickerView)
@@ -143,4 +154,27 @@ class MakeIPTableViewCell: UITableViewCell {
         nextButton.backgroundColor = .red
         nextButton.fillSuperview()
     }
+}
+
+extension PickerHelper: UIPickerViewDelegate {
+    
+}
+
+extension PickerHelper: UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 0
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return 0
+    }
+}
+
+class PickerHelper: NSObject {
+    var view: UIView?
+    init(_ view: UIView) {
+        super.init()
+        
+    }
+    
 }

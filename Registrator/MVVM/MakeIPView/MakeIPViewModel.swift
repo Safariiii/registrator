@@ -7,16 +7,120 @@
 //
 import Foundation
 
+enum EditType {
+    case text
+    case select(values: [(value: String, name: String)])
+    case email
+    case phone
+}
+
+enum Step: CaseIterable {
+    case step1
+    case step2
+    
+    var types: [TextFieldType] {
+        switch self {
+        case .step1:
+            return [.lastName, .firstName, .middleName]
+        case .step2:
+            return [.lastName, .firstName, .middleName]
+        }
+    }
+    
+    static var sortedSteps: [Step] = [ .step1, .step2]
+}
+
+enum TextFieldType: String, CaseIterable {
+    case lastName = "Фамилия"
+    case firstName = "Имя"
+    case middleName
+    case sex
+    case citizenship
+    case dateOfBirth
+    case email
+    case phoneNumber
+    case passportSeries
+    case passportNumber
+    case passportDate
+    case passportGiver
+    case passportCode
+    case placeOfBirth
+    case address
+    case inn
+    case snils
+    case taxesSystem
+    case taxesRate
+    case giveMethod
+    case okveds
+    case none
+    
+    var title: String {
+        switch self {
+        case .lastName:
+            return "Длинное название Фамилии"
+        default:
+            return "Без название"
+        }
+    }
+    
+    var editType: EditType {
+        switch self {
+        case .lastName, .firstName, .middleName:
+            return .text
+        case .sex:
+            return .select(values: [(value: "M", name: "Men"), (value: "W", name: "Women")])
+        default:
+            return .text
+        }
+    }
+    
+    var validateType: ValidateType {
+        switch self {
+        case .email:
+            return .email
+        case .phoneNumber:
+            return .phone
+        default:
+            return .none
+        }
+    }
+    
+    func save(value: String) {
+        switch self.editType {
+        case .email:
+            print("email")
+            //saveData(self.title, value)
+        case .select:
+            print("select")
+            //saveData(self.title, value)
+        default:
+            return
+        }
+    }
+}
+
+let test = TextFieldType.address
+
+
+
 class MakeIPViewModel {
     
+    var router: MakeIPRouter!
     let id: String
     let isNew: Bool
     var currentSection = 0
     var newFile: File?
     var reloadHandler: (() -> Void)?
     let firebaseManager = FirebaseManager()
+    
+    let steps = Step.sortedSteps
+    
     var stepsLabelsArray: [[String]] = [["Фамилия: ", "Имя: ", "Отчество: ", "Пол: ", "Гражданство: ", "Дата рождения: ", "E-mail: ", "Номер телефона: "], ["Серия паспорта: ", "Номер паспорта: ", "Дата выдачи: ", "Кем выдан: ", "Код подразделения: ", "Место рождения: ", "Адрес регистрации: ", "ИНН: ", "СНИЛС: "], ["В данный момент нет добавленных кодов ОКВЭД"], ["Система нологообложения: ", "Ставка налогообложения: "], ["Лично", "По доверенности"]]
      
+    var items: [[TextFieldType]] = [[.lastName, .firstName, .middleName]]
+    
+    //let items2 = TextFieldType.allCases.map { $0.title }
+    
     private let headersLabelsArray = ["Шаг 1: Личная информация", "Шаг 2: Паспортные данные", "Шаг 3: ОКВЭД", "Шаг 4: Налогообложение", "Шаг 5: Способ подачи документов"]
     
     init(id: String, isNew: Bool) {
@@ -27,6 +131,15 @@ class MakeIPViewModel {
         } else {
             newFile = File()
         }
+        
+        if let validator = test.validateType.validator {
+            validator.isValide(value: "test")
+        }
+    }
+    
+    func pushPaymentButton() {
+        // обработать логику
+        router.routeToPayment()
     }
     
     func createTextFields() {
@@ -85,6 +198,12 @@ class MakeIPViewModel {
     }
     
     func numberOfRowsInSection(section: Int) -> Int {
+        
+        /*
+        let step = TextFieldSection.step1
+        return step.types.count
+         */
+        
         if currentSection == 2 {
             return stepsLabelsArray[currentSection].count + 2
         } else {
@@ -117,6 +236,8 @@ class MakeIPViewModel {
     }
     
     func cellViewModel(forIndexPath indexPath: IndexPath) -> MakIPCellViewModel? {
+        //  получить step
+        // получить fieldtype
         
         var cellTitle = ""
         var cellText = ""

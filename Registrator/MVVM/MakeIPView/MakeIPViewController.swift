@@ -28,7 +28,7 @@ class MakeIPViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
-        setupKeyboard()
+        setupKeyboard()        
     }
     
     func initViewModel() {
@@ -143,6 +143,7 @@ extension MakeIPViewController: UITextFieldDelegate {
     
     func tableView(_ tableView: UITableView, didUpdateFocusIn context: UITableViewFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator) {
         print("ok")
+        makeIPViewModel?.pushPaymentButton()
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -156,6 +157,7 @@ extension MakeIPViewController: UITextFieldDelegate {
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        //makeIPViewModel?.validate()
         return textField.validateTextField(letter: string)
     }
 }

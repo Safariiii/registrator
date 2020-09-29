@@ -159,27 +159,70 @@ extension UITextField {
     }
 }
 
-enum TextFieldType {
-    case lastName
-    case firstName
-    case middleName
-    case sex
-    case citizenship
-    case dateOfBirth
-    case email
-    case phoneNumber
-    case passportSeries
-    case passportNumber
-    case passportDate
-    case passportGiver
-    case passportCode
-    case placeOfBirth
-    case address
-    case inn
-    case snils
-    case taxesSystem
-    case taxesRate
-    case giveMethod
-    case okveds
+enum ValidateType {
     case none
+    case passport
+    case email
+    case phone
+    
+    var validator: Validator? {
+        switch self {
+        case .passport:
+            return PassportValidator()
+        case .email:
+            return EmailValidator()
+        case .phone, .none:
+            return nil
+        }
+    }
 }
+
+protocol Validator {
+    var type: ValidateType { get }
+    func isValide(value: Any) -> Bool
+}
+
+struct EmailValidator: Validator {
+    var type: ValidateType {
+        .email
+    }
+    
+    func isValide(value: Any) -> Bool {
+        return true
+    }
+}
+
+struct PassportValidator: Validator {
+    var type: ValidateType {
+        .passport
+    }
+    
+    func isValide(value: Any) -> Bool {
+        return true
+    }
+}
+
+//enum TextFieldType {
+//    case lastName
+//    case firstName
+//    case middleName
+//    case sex
+//    case citizenship
+//    case dateOfBirth
+//    case email
+//    case phoneNumber
+//    case passportSeries
+//    case passportNumber
+//    case passportDate
+//    case passportGiver
+//    case passportCode
+//    case placeOfBirth
+//    case address
+//    case inn
+//    case snils
+//    case taxesSystem
+//    case taxesRate
+//    case giveMethod
+//    case okveds
+//    case none
+//}
