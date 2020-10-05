@@ -12,12 +12,28 @@ class DatePickerCell: TextFieldCell {
 
     var viewModel: CellViewModel? {
         willSet(viewModel) {
-            titleLabel?.text = viewModel?.title
-            textField?.text = viewModel?.text
-            textField?.isUserInteractionEnabled = false
-            setupPickerButton()
-            setupTitleLabel()
+            initViewModel(viewModel)
         }
+    }
+    //тут мы создаем UI
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        textField?.isUserInteractionEnabled = false
+        setupPickerButton()
+    }
+    // заполняем
+    func initViewModel(_ viewModel: CellViewModel?) {
+        titleLabel?.text = viewModel?.title
+        textField?.text = viewModel?.text
+        
+        //setupPickerButton()
+        setupTitleLabel()
+    }
+
+    // очистить старые данные
+    override func prepareForReuse() {
+        // запускается перед переиспользованием
+        
     }
 
     //MARK: - pickerButton

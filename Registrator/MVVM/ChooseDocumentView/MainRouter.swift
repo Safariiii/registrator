@@ -10,19 +10,22 @@ import UIKit
 
 class MainRouter {
     
-    static var nc: UINavigationController?
+//    static var nc: UINavigationController?
+    weak var nc: UINavigationController?
     
     static func showModule() {
         let configurator = MainConfigurator()
+        
         if let vc = configurator.view {
-            nc = UINavigationController(rootViewController: vc)
+            let nc = UINavigationController(rootViewController: vc)
+            configurator.router?.nc = nc
             SceneDelegate.window?.rootViewController = nc
             SceneDelegate.window?.makeKeyAndVisible()
         }
     }
     
     func makeIPRoute(documentId: String?) {
-        guard let nc = MainRouter.nc else { return }
+        guard let nc = nc else { return }
         MakeIPRouter.showModule(nc: nc, documentId: documentId)
         
     }

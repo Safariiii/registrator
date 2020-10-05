@@ -18,6 +18,9 @@ class MakeIPViewModel {
     var addOkvedView: (() -> Void)?
     let firebaseManager = FirebaseManager()
     var steps = Step(rawValue: 0)
+    /*var steps = Step.step1
+    var steps: Step = .step1
+ */
     
     init(id: String, isNew: Bool) {
         self.id = id
@@ -30,13 +33,20 @@ class MakeIPViewModel {
         }
     }
     
+    deinit {
+        print("deinit MakeIPViewModel")
+    }
+    
     func okvedRoute() {
         guard let file = newFile else { return }
         router.okvedRoute(okveds: file.okveds, id: id)
     }
     
     func createTextFields() {
-        firebaseManager.createTextFields(id: id) { (file, okveds) in
+        firebaseManager.createTextFields(id: id) { [weak self] (file, okveds) in
+            guard let self = self else {
+                return
+            }
             self.newFile = file
             Step.okveds = self.newFile!.okveds
             self.reloadHandler?()
@@ -62,14 +72,18 @@ class MakeIPViewModel {
     }
     
     func didSelectRow(index: Int) {
-        guard let step = steps else { return }
-        if step.fields[index] == .giveMethod {
-            step.fields[index].save(text: newFile!.giveMethods[index], id: id, okveds: nil)
+        guard let step = steps else {
+            return
+        }
+        let field = step.fields[index]
+        
+        if field == .giveMethod {
+            field.save(text: newFile!.giveMethods[index], id: id, okveds: nil)
             reloadHandler?()
-        } else if step.fields[index] == .none {
+        } else if field == .none {
             nextButtonPressed()
             reloadHandler?()
-        } else if step.fields[index] == .addOkved {
+        } else if field == .addOkved {
             addOkvedView?()
         }
     }

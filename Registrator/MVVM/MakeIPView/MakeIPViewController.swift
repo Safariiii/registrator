@@ -15,6 +15,22 @@ class MakeIPViewController: UIViewController {
             initViewModel()
         }
     }
+    /*
+    var button = UIButton()
+    //button = nil
+    
+    weak var button1: UIButton?
+    unowned var button2: UIButton
+    button1 = button
+
+    button2 = button()
+    button = nil
+    
+    button2.setTitle()
+ */
+    deinit {
+        print("deinit MakeIPViewController")
+    }
     
     func setupCell(indexPath: IndexPath) -> UITableViewCell {
         guard let viewModel = makeIPViewModel, let step = viewModel.steps else { return UITableViewCell() }
@@ -50,12 +66,17 @@ class MakeIPViewController: UIViewController {
             return cell
         }
     }
+
+    func register(type: UITableViewCell.Type) {
+        //tableView.register(type, forCellReuseIdentifier: type.)
+    }
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(TextCell.self, forCellReuseIdentifier: "Cell")
+        // tableView.register(TextCell.self, forCellReuseIdentifier: "TextCell")
         tableView.register(PickerCell.self, forCellReuseIdentifier: "Cell1")
         tableView.register(GiveMethodCell.self, forCellReuseIdentifier: "Cell2")
         tableView.register(OkvedCell.self, forCellReuseIdentifier: "Cell3")

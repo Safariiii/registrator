@@ -8,21 +8,21 @@
 
 import UIKit
 
-
 class MakeIPRouter {
     
-    static var nc: UINavigationController?
+    //static var nc: UINavigationController?
+    weak var nc: UINavigationController?
     
     static func showModule(nc: UINavigationController, documentId: String? = nil) {
         let configurator = MakeIPConfigurator(documentId: documentId)
-        self.nc = nc
+        configurator.router?.nc = nc
         if let vc = configurator.view {
             nc.pushViewController(vc, animated: true)
         }
     }
     
     func okvedRoute(okveds: [OKVED], id: String) {
-        guard let nc = MainRouter.nc else { return }
+        guard let nc = nc else { return }
         OkvedRouter.showModule(nc: nc, okveds: okveds, id: id)
     }
 }

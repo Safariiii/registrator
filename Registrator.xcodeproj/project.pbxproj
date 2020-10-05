@@ -151,8 +151,6 @@
 		5679ACE624FFFCB700D9A069 /* MVVM */ = {
 			isa = PBXGroup;
 			children = (
-				A0353EE92525F03500698C80 /* enums */,
-				5679ACE824FFFFBA00D9A069 /* Views */,
 				A03FCBE62510FF60004DE127 /* ChooseDocumentView */,
 				5679ACE724FFFCCE00D9A069 /* MakeIPView */,
 				A09A5A2D251E2FCF00136EF8 /* OkvedView */,
@@ -163,6 +161,7 @@
 		5679ACE724FFFCCE00D9A069 /* MakeIPView */ = {
 			isa = PBXGroup;
 			children = (
+				56AD57EA252B80BA00AEACC9 /* Cells */,
 				A0F6851225249F83007245A9 /* cellViewModels */,
 				A0F6850725248BB1007245A9 /* cellClasses */,
 				A0339BCF24C9EC710082F693 /* MakeIPViewModel.swift */,
@@ -184,6 +183,41 @@
 				A0353EE02524FCB200698C80 /* TitleLabel.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		56AD57E8252B807C00AEACC9 /* UIKit */ = {
+			isa = PBXGroup;
+			children = (
+				5679ACE824FFFFBA00D9A069 /* Views */,
+			);
+			path = UIKit;
+			sourceTree = "<group>";
+		};
+		56AD57EA252B80BA00AEACC9 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				A0353EE325251F5C00698C80 /* MainCellClasses */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		56AD57ED252B815100AEACC9 /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				A0C0237A251B6C43000B871E /* String+extension.swift */,
+			);
+			path = Foundation;
+			sourceTree = "<group>";
+		};
+		56AD57EE252B815A00AEACC9 /* UIKit */ = {
+			isa = PBXGroup;
+			children = (
+				A0A9C668251AB25A00D9BD55 /* TextField+extension.swift */,
+				A0C0237E251B8BC8000B871E /* View+extension.swift */,
+				A09A5A29251CE8A200136EF8 /* UILabel+extension.swift */,
+				A09A5A2B251CF21B00136EF8 /* UIButton+extension.swift */,
+			);
+			path = UIKit;
 			sourceTree = "<group>";
 		};
 		A0353EE325251F5C00698C80 /* MainCellClasses */ = {
@@ -257,11 +291,8 @@
 		A0A9C667251A90E900D9BD55 /* extensions */ = {
 			isa = PBXGroup;
 			children = (
-				A0A9C668251AB25A00D9BD55 /* TextField+extension.swift */,
-				A0C0237A251B6C43000B871E /* String+extension.swift */,
-				A0C0237E251B8BC8000B871E /* View+extension.swift */,
-				A09A5A29251CE8A200136EF8 /* UILabel+extension.swift */,
-				A09A5A2B251CF21B00136EF8 /* UIButton+extension.swift */,
+				56AD57EE252B815A00AEACC9 /* UIKit */,
+				56AD57ED252B815100AEACC9 /* Foundation */,
 			);
 			path = extensions;
 			sourceTree = "<group>";
@@ -269,6 +300,7 @@
 		A0C29FD824C9EA5E00A202B8 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				A0353EE92525F03500698C80 /* enums */,
 				A0339BD524CB42A60082F693 /* Constants.swift */,
 				A0AA563E24D1E56D00AD6421 /* Document.swift */,
 				A0E1CF0324EBC9F900241C4B /* OKVED.swift */,
@@ -306,6 +338,7 @@
 		A0E2D5362496269100421B78 /* Registrator */ = {
 			isa = PBXGroup;
 			children = (
+				56AD57E8252B807C00AEACC9 /* UIKit */,
 				A09A5A2E251E541300136EF8 /* Services */,
 				A0A9C667251A90E900D9BD55 /* extensions */,
 				5679ACE624FFFCB700D9A069 /* MVVM */,
@@ -325,7 +358,6 @@
 		A0F6850725248BB1007245A9 /* cellClasses */ = {
 			isa = PBXGroup;
 			children = (
-				A0353EE325251F5C00698C80 /* MainCellClasses */,
 				A0353EE425251F7A00698C80 /* SecondaryCellClasses */,
 			);
 			path = cellClasses;

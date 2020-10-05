@@ -9,8 +9,9 @@
 import UIKit
 
 class NextButtonCell: UITableViewCell {
-
-    weak var viewModel: NextButtonViewModel? {
+    
+    //weak
+    var viewModel: NextButtonViewModel? {
         willSet(viewModel) {
             guard let viewModel = viewModel else { return }
             textLabel?.text = viewModel.title
