@@ -18,9 +18,9 @@ struct FirebaseManager {
             documents.append(Document(id: "", title: "Создать новый комплект документов", date: ""))
             for doc in snapshot.documents {
                 let data = doc.data()
-                if let lastName = data["lastName"] as? String, let firstName = data["firstName"] as? String, let middleName = data["middleName"] as? String {
+                if let lastName = data["lastName"] as? String, let firstName = data["firstName"] as? String, let middleName = data["middleName"] as? String, let date = data["dateOfBirth"] as? String {
                     let title = "\(lastName) \(firstName) \(middleName)"
-                    let date = data["dateOfBirth"] as! String
+                    
                     documents.append(Document(id: doc.documentID, title: title, date: date))
                 }
             }
@@ -29,7 +29,7 @@ struct FirebaseManager {
     }
     
     func createTextFields(id: String, completion: @escaping ((File, [String]) -> Void)) {
-        db.collection("documents").document("CurrentUser").collection("IP").document(id).getDocument { (querySnapshot, error) in
+        db.collection("documents").document("CurrentUser").collection("IP").document(id).addSnapshotListener { (querySnapshot, error) in
             
             guard let snapshot = querySnapshot else {
                 print("Error retreiving snapshot: \(error!)")
@@ -68,43 +68,6 @@ struct FirebaseManager {
                 }
                 completion(newFile, okvedsToDisplay)
             }
-        }
-    }
-    
-    func saveDocumentToFirestore(file: File, id: String, okveds: [OKVED]?) {
-        var okvedsToSave: [String : String] = [:]
-        if let okveds = okveds {
-            for item in okveds {
-                let kod = item.kod
-                let descr = item.descr
-                okvedsToSave[kod] = descr
-            }
-        }
-        db.collection("documents").document("CurrentUser").collection("IP").document(id).setData(
-            [
-                "lastName" : file.lastName,
-                "firstName" : file.firstName,
-                "middleName" : file.middleName,
-                "sex" : file.sex,
-                "citizenship" : file.citizenship,
-                "dateOfBirth" : file.dateOfBirth,
-                "email" : file.email,
-                "phoneNumber" : file.phoneNumber,
-                "passportSeries" : file.passportSeries,
-                "passportNumber" : file.passportNumber,
-                "passportDate" : file.passportDate,
-                "passportGiver" : file.passportGiver,
-                "passportCode" : file.passportCode,
-                "placeOfBirth" : file.placeOfBirth,
-                "address" : file.address,
-                "inn" : file.inn,
-                "snils" : file.snils,
-                "okveds" : [:],
-                "taxesSystem" : file.taxesSystem,
-                "taxesRate" : file.taxesRate,
-                "giveMethod" : file.giveMethod
-        ], merge: true){ (error) in
-            self.db.collection("documents").document("CurrentUser").collection("IP").document(id).setData(["okveds" : okvedsToSave as Any], merge: true)
         }
     }
     

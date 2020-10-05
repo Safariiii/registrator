@@ -6,18 +6,18 @@
 //  Copyright © 2020 Руслан Сафаргалеев. All rights reserved.
 //
 import Foundation
+import Firebase
 
 class MakeIPViewModel {
     
+    var router: MakeIPRouter!
     let id: String
     let isNew: Bool
-    var currentSection = 0
     var newFile: File?
     var reloadHandler: (() -> Void)?
+    var addOkvedView: (() -> Void)?
     let firebaseManager = FirebaseManager()
-    var stepsLabelsArray: [[String]] = [["Фамилия: ", "Имя: ", "Отчество: ", "Пол: ", "Гражданство: ", "Дата рождения: ", "E-mail: ", "Номер телефона: "], ["Серия паспорта: ", "Номер паспорта: ", "Дата выдачи: ", "Кем выдан: ", "Код подразделения: ", "Место рождения: ", "Адрес регистрации: ", "ИНН: ", "СНИЛС: "], ["В данный момент нет добавленных кодов ОКВЭД"], ["Система нологообложения: ", "Ставка налогообложения: "], ["Лично", "По доверенности"]]
-     
-    private let headersLabelsArray = ["Шаг 1: Личная информация", "Шаг 2: Паспортные данные", "Шаг 3: ОКВЭД", "Шаг 4: Налогообложение", "Шаг 5: Способ подачи документов"]
+    var steps = Step(rawValue: 0)
     
     init(id: String, isNew: Bool) {
         self.id = id
@@ -26,120 +26,74 @@ class MakeIPViewModel {
             createTextFields()
         } else {
             newFile = File()
+            steps?.createNewDoc(id: id)
         }
+    }
+    
+    func okvedRoute() {
+        guard let file = newFile else { return }
+        router.okvedRoute(okveds: file.okveds, id: id)
     }
     
     func createTextFields() {
         firebaseManager.createTextFields(id: id) { (file, okveds) in
-            if okveds != [] {
-                self.stepsLabelsArray[2] = okveds
-            }
             self.newFile = file
+            Step.okveds = self.newFile!.okveds
             self.reloadHandler?()
         }
     }
     
     func nextButtonPressed() {
-        if currentSection + 1 < headersLabelsArray.count {
-            currentSection += 1
-        }
+        steps?.nextSection()
     }
     
     func prevButtonPressed() {
-        if currentSection != 0 {
-            currentSection -= 1
-        }
-    }
-    
-    func setOkveds(okveds: [OKVED]) {
-        newFile?.okveds = []
-        var kodes: [String] = []
-
-        for i in 0..<okveds.count {
-            let kod = okveds[i].kod
-            let descr = okveds[i].descr
-            let kodString = "\(kod). \(descr)"
-            kodes.append(kodString)
-            newFile?.okveds.append(okveds[i])
-        }
-        stepsLabelsArray[2] = kodes
-        saveDocument()
-        reloadHandler?()
-    }
-    
-    func titleForRowInPickerView(row: Int, type: PickerViewType) -> String {
-        switch type {
-        case .genders:
-            return Constants.genders[row]
-        case .taxesSystem:
-            return Constants.taxes[row]
-        case .taxesRate:
-            return Constants.taxesRate[row]
-        default:
-            return "Ошибка"
-        }
-    }
-
-    func numberOfSections() -> Int {
-        return headersLabelsArray.count
+        steps?.prevSection()
     }
     
     func numberOfRowsInSection(section: Int) -> Int {
-        if currentSection == 2 {
-            return stepsLabelsArray[currentSection].count + 2
-        } else {
-            return stepsLabelsArray[currentSection].count + 1
-        }
-    }
-    
-    func didSelectRow(index: Int) {
-        if currentSection == 4 {
-            if index == 0 {
-                newFile?.giveMethod = "Лично"
-            } else if index == 1 {
-                newFile?.giveMethod = "По доверенности"
-            }
-            saveDocument()
-            reloadHandler?()
-        }
-        if index == stepsLabelsArray[currentSection].count {
-            nextButtonPressed()
-            reloadHandler?()
-        } else if index == stepsLabelsArray[currentSection].count + 1 {
-            nextButtonPressed()
-            reloadHandler?()
-        }
-        
+        guard let step = steps else { return 0 }
+        return step.fields.count
     }
     
     func titleForHeaderInSection() -> String {
-        return headersLabelsArray[currentSection]
+        guard let step = steps else { return "" }
+        return step.title
     }
     
-    func cellViewModel(forIndexPath indexPath: IndexPath) -> MakIPCellViewModel? {
-        
-        var cellTitle = ""
-        var cellText = ""
-        let data = stepsLabelsArray[currentSection]
-        if indexPath.row < data.count {
-            cellTitle = data[indexPath.row]
-            if currentSection != 2 && currentSection != 4 {
-                if var newFile = newFile {
-                    cellText = newFile.cellText(title: cellTitle)
-                }
-            }
-        } else if currentSection == 2 && indexPath.row == data.count {
-            cellTitle = "Кнопка добавить ОКВЭД"
+    func didSelectRow(index: Int) {
+        guard let step = steps else { return }
+        if step.fields[index] == .giveMethod {
+            step.fields[index].save(text: newFile!.giveMethods[index], id: id, okveds: nil)
+            reloadHandler?()
+        } else if step.fields[index] == .none {
+            nextButtonPressed()
+            reloadHandler?()
+        } else if step.fields[index] == .addOkved {
+            addOkvedView?()
         }
-        return MakIPCellViewModel(cellTitle: cellTitle, cellText: cellText, tag: indexPath.row, currentSection: currentSection, giveMethod: newFile?.giveMethod ?? "")
     }
     
-    func setTextFieldInfo(text: String, type: TextFieldType) {
-        newFile?.setTextField(text: text, type: type)
-        saveDocument()
-    }
-    
-    private func saveDocument() {
-        firebaseManager.saveDocumentToFirestore(file: newFile!, id: id, okveds: newFile?.okveds)
+    func cellViewModel(indexPath: IndexPath) -> CellViewModel? {
+        guard var newFile = newFile, let step = steps else { return nil }
+        let item = step.fields[indexPath.row]
+        let text = newFile.cellText(title: item.rawValue, row: indexPath.row)
+        
+        switch item.group {
+        case .text:
+            return TextCellViewModel(title: item.rawValue, text: text, id: id, validateType: item.validateType, type: item)
+        case .picker:
+            return PickerCellViewModel(title: item.rawValue, text: text, id: id, fields: item.selectFields, type: item)
+        case .datePicker:
+            return CellViewModel(title: item.rawValue, text: text, id: id, type: item)
+        case .giveMethod:
+            return GiveMethodCellViewModel(title: text, id: id, giveMethod: newFile.giveMethod, type: item)
+        case .okveds:
+            return OkvedTypeCellViewModel(text: text, id: id, type: item)
+        case .none:
+            return NextButtonViewModel()
+        case .addOkved:
+            return AddOkvedViewModel(okveds: newFile.okveds)
+        }
     }
 }

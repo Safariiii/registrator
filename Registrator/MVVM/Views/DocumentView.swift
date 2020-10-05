@@ -7,42 +7,59 @@
 
 import UIKit
 
-class DocumentView: UIView {
+fileprivate let secondHelpText = NSLocalizedString(
+    "Для успешной подготовки документов, введите необходимую информацию в Мастер подготовки документов. При заполнении паспортных данных вводите информацию точно также как она указана в паспорте (не используйте сокращений или других склонений)."
+    , comment: "")
+fileprivate let helpText = "Мастер подготовки документов"
+fileprivate let buttonTitle = "Начать"
 
+class DocumentView: UIView {
     lazy var helpTextLabel: UILabel = {
-        let label = UILabel(text: "Мастер подготовки документов", textColor: .black, fontSize: 21, fontWeight: .semibold, alignment: .center)
+        let label = UILabel(text: helpText, textColor: .black, fontSize: 21, fontWeight: .semibold, alignment: .center)
         return label
     }()
     
     lazy var secondHelpTextLabel: UILabel = {
-        let text = "Для успешной подготовки документов, введите необходимую информацию в Мастер подготовки документов. При заполнении паспортных данных вводите информацию точно также как она указана в паспорте (не используйте сокращений или других склонений)."
+        let text = secondHelpText
         let label = UILabel(text: text, fontSize: 14, alignment: .justified)
         return label
     }()
     
     lazy var beginButton: UIButton = {
-        let button = UIButton(title: "Начать", titleColor: .white, backgroundColor: .red, action: #selector(beginButtonPressed), target: self, cornerRadius: 7)
+        let button = UIButton(
+            title: buttonTitle,
+            titleColor: .white,
+            backgroundColor: .red,
+            action: #selector(beginButtonPressed),
+            target: self,
+            cornerRadius: 7)
         return button
     }()
     
     init() {
         super.init(frame: .zero)
-        setupUI()
+        backgroundColor = .white
+        setupHelpTextLabel()
+        setupSecondHelpTextLabel()
+        setupBeginButton()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    func setupUI() {
-        backgroundColor = .white
+    
+    func setupHelpTextLabel() {
         self.addSubview(helpTextLabel)
         helpTextLabel.setupAnchors(top: nil, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor)
         helpTextLabel.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -150).isActive = true
-        
+    }
+    
+    func setupSecondHelpTextLabel() {
         self.addSubview(secondHelpTextLabel)
         secondHelpTextLabel.setupAnchors(top: helpTextLabel.bottomAnchor, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 15, left: 10, bottom: 0, right: -10))
-
+    }
+    
+    func setupBeginButton() {
         self.addSubview(beginButton)
         beginButton.setupAnchors(top: secondHelpTextLabel.bottomAnchor, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 35, left: 65, bottom: 0, right: -65))
     }

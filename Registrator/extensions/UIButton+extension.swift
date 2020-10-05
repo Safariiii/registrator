@@ -9,9 +9,21 @@
 import UIKit
 
 extension UIButton {
-//    
-    convenience init(title: String = "", titleColor: UIColor = .black, backgroundColor: UIColor = .clear, action: Selector?, target: Any?, targetEvent: UIControl.Event = .touchUpInside, cornerRadius: CGFloat = 0, tag: Int = 0, fontSize: CGFloat = 17, numberOfLines: Int = 0, textAlignment: NSTextAlignment = .center, image: UIImage? = nil) {
-        
+    //
+    convenience init(
+        title: String = "",
+        titleColor: UIColor = .black,
+        backgroundColor: UIColor = .clear,
+        action: Selector?,
+        target: Any?,
+        targetEvent: UIControl.Event = .touchUpInside,
+        cornerRadius: CGFloat = 0,
+        tag: Int = 0,
+        fontSize: CGFloat = 17,
+        numberOfLines: Int = 0,
+        textAlignment: NSTextAlignment = .center,
+        image: UIImage? = nil
+    ) {
         self.init()
         setTitle(title, for: .normal)
         setTitleColor(titleColor, for: .normal)
@@ -27,6 +39,5 @@ extension UIButton {
         titleLabel?.font = UIFont.systemFont(ofSize: fontSize)
         titleLabel?.numberOfLines = numberOfLines
         titleLabel?.textAlignment = textAlignment
-
     }
 }

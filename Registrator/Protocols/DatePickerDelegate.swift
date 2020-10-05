@@ -9,6 +9,6 @@
 import UIKit
 
 protocol DatePickerDelegate {
-    func didDismissDatePicker(text: String, type: TextFieldType)
+    func didDismissDatePicker(text: String)
 }
 

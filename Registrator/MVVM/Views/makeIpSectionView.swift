@@ -34,20 +34,31 @@ class MakeIpSectionView: UIView {
         super.init(frame: .zero)
         self.backgroundColor = .red
         heightAnchor.constraint(equalToConstant: 50).isActive = true
-        
+        setupSectionTitle()
+        guard let step = viewModel.steps else { return }
+        makeIpSectionTitle.tag = step.rawValue
+        if step != .step1 {
+            setupPrevButton()
+        }
+        if step != .step5 {
+            setupNextButton()
+        }
+    }
+    
+    func setupSectionTitle() {
         makeIpSectionTitle.setTitle(viewModel.titleForHeaderInSection(), for: .normal)
         addSubview(makeIpSectionTitle)
         makeIpSectionTitle.fillSuperview()
-        makeIpSectionTitle.tag = viewModel.currentSection
-        
-        if viewModel.currentSection != 0 {
-            addSubview(prevButton)
-            prevButton.setupAnchors(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: nil, padding: .init(top: 0, left: 15, bottom: 0, right: 0))
-        }
-        if viewModel.currentSection != 4 {
-            addSubview(nextButton)
-            nextButton.setupAnchors(top: topAnchor, leading: nil, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: -15))
-        }
+    }
+    
+    func setupPrevButton() {
+        addSubview(prevButton)
+        prevButton.setupAnchors(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: nil, padding: .init(top: 0, left: 15, bottom: 0, right: 0))
+    }
+    
+    func setupNextButton() {
+        addSubview(nextButton)
+        nextButton.setupAnchors(top: topAnchor, leading: nil, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: -15))
     }
     
     required init?(coder: NSCoder) {

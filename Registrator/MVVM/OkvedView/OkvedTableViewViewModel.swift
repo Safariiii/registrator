@@ -12,6 +12,7 @@ import RealmSwift
 class OkvedTableViewViewModel {
     var openSection: Int?
     let realm = try! Realm()
+    var id: String
     var selectedCodes: Results<Code>?
     var selectedSections: Results<Class>?
     var sectionsArray: [[String]] = []
@@ -19,9 +20,11 @@ class OkvedTableViewViewModel {
     var chosenCodes: [OKVED] = []
     var reloadHandler: (() -> Void)?
     var scrollToRow: ((_ indexPath: IndexPath) -> Void)?
+    var router: OkvedRouter!
     
-    init(okveds: [OKVED]) {
+    init(okveds: [OKVED], id: String) {
         chosenCodes = okveds
+        self.id = id
     }
     
     func titleForHeaderInSection(section: Int) -> String {
@@ -83,7 +86,7 @@ class OkvedTableViewViewModel {
         }
     }
     
-    func didSelectRow(indexPath: IndexPath, ipViewModel: MakeIPViewModel) {
+    func didSelectRow(indexPath: IndexPath) {
         if selectedSections != nil {
             let kod = selectedCodesArray[indexPath.section][indexPath.row].code!
             if checkIfCodeIsSelected(code: kod) {
@@ -93,18 +96,21 @@ class OkvedTableViewViewModel {
                 let newKod = OKVED(kod: kod, descr: descr)
                 chosenCodes.append(newKod)
             }
-            ipViewModel.setOkveds(okveds: chosenCodes)
+            
+            let okvedField = TextFieldType.addOkved
+            okvedField.save(text: "", id: id, okveds: chosenCodes)
             reloadHandler?()
         } else {
             let kod = (realm.object(ofType: Class.self, forPrimaryKey: Constants.okvedClasses[indexPath.section][0])?.codes.sorted(byKeyPath: "code")[indexPath.row].code)!
-            if checkIfCodeIsSelected(code: kod) {                
+            if checkIfCodeIsSelected(code: kod) {
                 chosenCodes.removeAll (where: { $0.kod == kod })
             } else {
                 let descr = (realm.object(ofType: Class.self, forPrimaryKey: Constants.okvedClasses[indexPath.section][0])?.codes.sorted(byKeyPath: "code")[indexPath.row].descr)!
                 let newKod = OKVED(kod: kod, descr: descr)
                 chosenCodes.append(newKod)
             }
-            ipViewModel.setOkveds(okveds: chosenCodes)
+            let okvedField = TextFieldType.addOkved
+            okvedField.save(text: "", id: id, okveds: chosenCodes)
             reloadHandler?()
         }
     }
@@ -143,5 +149,9 @@ class OkvedTableViewViewModel {
             selectedSections = nil
         }
         reloadHandler?()
+    }
+    
+    func dismissVC() {
+        router.dismissModule()
     }
 }
