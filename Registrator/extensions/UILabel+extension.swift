@@ -18,4 +18,16 @@ extension UILabel {
         self.numberOfLines = numberOfLines
         
     }
+    
+    func animateLabel(y: CGFloat) {
+        UIView.animate(
+            withDuration: 0.5,
+            delay: 0,
+            usingSpringWithDamping: 1,
+            initialSpringVelocity: 1,
+            options: .curveLinear,
+            animations: {
+            self.transform = CGAffineTransform(translationX: 0, y: y)
+        })
+    }
 }

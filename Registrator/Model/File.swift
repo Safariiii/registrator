@@ -31,6 +31,8 @@ struct File {
     var giveMethod: String = ""
     var okveds: [OKVED] = []
     
+    let giveMethods = ["Лично", "По доверенности"]
+    
     mutating func setTextField(text: String, type: TextFieldType) {
         switch type {
         case .lastName:
@@ -78,7 +80,7 @@ struct File {
         }
     }
     
-    mutating func cellText(title: String) -> String {
+    mutating func cellText(title: String, row: Int) -> String {
         switch title {
         case "Фамилия: ":
             return lastName
@@ -118,6 +120,12 @@ struct File {
             return taxesSystem
         case "Ставка налогообложения: ":
             return taxesRate
+        case "Далее":
+            return ""
+        case "Оквэд":
+            return "\(okveds[row].kod). \(okveds[row].descr)"
+        case "Метод":
+            return giveMethods[row]
         default:
             return ""
         }

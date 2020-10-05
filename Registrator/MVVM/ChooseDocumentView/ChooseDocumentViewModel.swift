@@ -11,6 +11,7 @@ import Firebase
 
 class ChooseDocumentViewModel {
     
+    var router: MainRouter!
     var documents: [Document] = []
     var reloadHandler: (() -> Void)?
     let firebaseService = FirebaseManager()
@@ -37,23 +38,12 @@ class ChooseDocumentViewModel {
     func cellViewModel(forIndexPath indexPath: IndexPath) -> ChooseDocumentCellViewModel? {
         let title = documents[indexPath.row].title
         let date = documents[indexPath.row].date
-        
         return ChooseDocumentCellViewModel(title: title, date: date)
     }
     
     func showDocument(indexPath: IndexPath) {
-        // TODO: - router here
         let documentId = indexPath.row == 0 ? nil : documents[indexPath.row].id
-        MakeIPRouter.showModule(documentId: documentId)
-        /*
-        if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MakeIPViewController") as? MakeIPViewController, let nc = SceneDelegate.navigationController {
-            if indexPath.row == 0 {
-                vc.makeIPViewModel = MakeIPViewModel(id: UUID().uuidString, isNew: true)
-            } else {
-                vc.makeIPViewModel = MakeIPViewModel(id: documents[indexPath.row].id, isNew: false)
-            }
-            nc.pushViewController(vc, animated: true)
-        }*/
+        router.makeIPRoute(documentId: documentId)
     }
     
     func deleteDocument(indexPath: IndexPath) {

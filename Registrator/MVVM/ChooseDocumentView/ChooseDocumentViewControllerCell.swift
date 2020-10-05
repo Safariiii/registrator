@@ -38,31 +38,31 @@ class ChooseDocumentViewControllerCell: UITableViewCell {
     func setupLabels(viewModel: ChooseDocumentCellViewModel) {
         docTitleLabel.removeFromSuperview()
         docDateLabel.removeFromSuperview()
-        
-        
         docTitleLabel.text = viewModel.title
-        
         if viewModel.title == "Создать новый комплект документов" {
-            backgroundColor = .systemGray5
-            docTitleLabel.textAlignment = .center
-            docTitleLabel.textColor = .black
-            
-            addSubview(plusImage)
-            plusImage.setupAnchors(top: nil, leading: leadingAnchor, bottom: nil, trailing: nil, centerY: centerYAnchor, padding: .init(top: 0, left: 15, bottom: 0, right: 0))
-            
-            addSubview(docTitleLabel)
-            docTitleLabel.setupAnchors(top: topAnchor, leading: plusImage.trailingAnchor, bottom: bottomAnchor, trailing: trailingAnchor)
-//            docTitleLabel.heightAnchor.constraint(equalToConstant: 55).isActive = true
-            
-            
-            
-            
+            setupViewForFirstCell()
         } else {
-            addSubview(docTitleLabel)
-            docTitleLabel.setupAnchors(top: topAnchor, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 10, left: 15, bottom: 0, right: 0))
-            addSubview(docDateLabel)
-            docDateLabel.setupAnchors(top: docTitleLabel.bottomAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 8, left: 15, bottom: -10, right: 0))
-            docDateLabel.text = viewModel.date
+            setupDefaultView(viewModel: viewModel)
         }
+    }
+    
+    func setupViewForFirstCell() {
+        backgroundColor = .systemGray5
+        docTitleLabel.textAlignment = .center
+        docTitleLabel.textColor = .black
+        
+        addSubview(plusImage)
+        plusImage.setupAnchors(top: nil, leading: leadingAnchor, bottom: nil, trailing: nil, centerY: centerYAnchor, padding: .init(top: 0, left: 15, bottom: 0, right: 0))
+        
+        addSubview(docTitleLabel)
+        docTitleLabel.setupAnchors(top: topAnchor, leading: plusImage.trailingAnchor, bottom: bottomAnchor, trailing: trailingAnchor)
+    }
+    
+    func setupDefaultView(viewModel: ChooseDocumentCellViewModel) {
+        addSubview(docTitleLabel)
+        docTitleLabel.setupAnchors(top: topAnchor, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 10, left: 15, bottom: 0, right: 0))
+        addSubview(docDateLabel)
+        docDateLabel.setupAnchors(top: docTitleLabel.bottomAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 8, left: 15, bottom: -10, right: 0))
+        docDateLabel.text = viewModel.date
     }
 }

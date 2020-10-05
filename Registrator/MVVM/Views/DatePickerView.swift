@@ -10,16 +10,12 @@ import UIKit
 
 class DatePickerView: UIDatePicker {
     let extraLayer = UIView()
-    let type: TextFieldType?
-    let delegate: DatePickerDelegate?
-    
-    init(delegate: DatePickerDelegate, type: TextFieldType?) {
-        self.delegate = delegate
-        self.type = type
+    var delegate: DatePickerDelegate?
+
+    init() {
         super.init(frame: .zero)
         extraLayer.alpha = 0.5
         backgroundColor = .white
-        alpha = 1
         datePickerMode = .date
         animatePickerView(y: -frame.height)
     }
@@ -43,11 +39,7 @@ class DatePickerView: UIDatePicker {
         animatePickerView(y: 0)
         extraLayer.removeFromSuperview()
         removeFromSuperview()
-        if type == .dateOfBirth {
-            delegate?.didDismissDatePicker(text: formatter.string(from: date), type: .dateOfBirth)
-        } else {
-            delegate?.didDismissDatePicker(text: formatter.string(from: date), type: .passportDate)
-        }
+        delegate?.didDismissDatePicker(text: formatter.string(from: date))
     }
     
     required init?(coder: NSCoder) {

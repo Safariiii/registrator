@@ -10,11 +10,8 @@ import UIKit
 
 class TextFieldView: UITextField {
     
-    init(viewModel: MakIPCellViewModel) {
+    init() {
         super.init(frame: .zero)
-        section = viewModel.currentSection
-        tag = viewModel.tag
-        text = viewModel.cellText
     }
     
     override func didMoveToSuperview() {

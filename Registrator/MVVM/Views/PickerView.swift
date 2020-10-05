@@ -11,13 +11,11 @@ import UIKit
 class PickerView: UIPickerView {
     let extraLayer = UIView()
     
-    init(tag: Int, section: Int) {
+    init() {
         super.init(frame: .zero)
         extraLayer.alpha = 0.5
         backgroundColor = .white
         alpha = 1
-        self.tag = tag
-        self.section = section
         animatePickerView(y: -frame.height)
     }
     

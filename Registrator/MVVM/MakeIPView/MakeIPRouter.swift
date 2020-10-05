@@ -8,33 +8,25 @@
 
 import UIKit
 
+
 class MakeIPRouter {
-    var nc: UINavigationController?
     
-    static func showModule(/*nc: UINavigationController? = nil, */documentId: String? = nil) {
+    static var nc: UINavigationController?
+    
+    static func showModule(nc: UINavigationController, documentId: String? = nil) {
         let configurator = MakeIPConfigurator(documentId: documentId)
-        //configurator.router?.nc = nc
-        
-        if let nc = SceneDelegate.navigationController, let vc = configurator.view {
-        /*if let vc = configurator.view {
-            let navController = nc ?? UINavigationController(rootViewController: vc)
-            configurator.router?.nc = navController
-            if nc == nil, let window = SceneDelegate.window {
-                window.rootViewController = navController
-                window.makeKeyAndVisible()
-            }*/
-            configurator.router?.nc = nc
+        self.nc = nc
+        if let vc = configurator.view {
             nc.pushViewController(vc, animated: true)
         }
     }
     
-    func routeToPayment() {
-        if let nc = nc {
-            //PaymentRouter.showModule(nc)
-        }
+    func okvedRoute(okveds: [OKVED], id: String) {
+        guard let nc = MainRouter.nc else { return }
+        OkvedRouter.showModule(nc: nc, okveds: okveds, id: id)
     }
 }
-//
+
 class MakeIPConfigurator {
     var viewModel: MakeIPViewModel?
     var router: MakeIPRouter?
@@ -42,7 +34,6 @@ class MakeIPConfigurator {
     
     init(documentId: String?) {
         if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MakeIPViewController") as? MakeIPViewController {
-            
             if let documentId = documentId {
                 viewModel = MakeIPViewModel(id: documentId, isNew: false)
             } else {
