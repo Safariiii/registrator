@@ -18,9 +18,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         setupTableView()
         okvedManager.checkForUpdates(view: view)
-//        aaa()
         initViewModel()
-        title = "Документы на регистрацию ИП"
+        guard let viewModel = viewModel else { return }
+        title = viewModel.viewControllerTitle
     }
     
     lazy var tableView: UITableView = {
@@ -30,20 +30,6 @@ class ViewController: UIViewController {
         tableView.register(ChooseDocumentViewControllerCell.self, forCellReuseIdentifier: "Cell")
         tableView.tableFooterView = UIView()
         return tableView
-    }()
-    
-    lazy var headerView: UIView = {
-        let headerView = UIView()
-        headerView.backgroundColor = .red
-        headerView.addSubview(headerTitle)
-        headerTitle.fillSuperview()
-        return headerView
-    }()
-    
-    lazy var headerTitle: UILabel = {
-        guard let viewModel = viewModel else { return UILabel()}
-        let label = UILabel(text: viewModel.titleForHeaderInSection(), textColor: .white, alignment: .center)
-        return label
     }()
     
     func setupTableView() {
@@ -102,21 +88,3 @@ extension ViewController: UITableViewDataSource {
         return tableViewCell
     }
 }
-
-
-//    func aaa() {
-//        let functions = Functions.functions()
-//        functions.httpsCallable("createDocument").call() { (result, error) in
-//          if let error = error as NSError? {
-//            if error.domain == FunctionsErrorDomain {
-////              let code = FunctionsErrorCode(rawValue: error.code)
-////              let message = error.localizedDescription
-////              let details = error.userInfo[FunctionsErrorDetailsKey]
-//            }
-//            // ...
-//          }
-//          if let text = result?.data {
-//            print(text)
-//          }
-//        }
-//    }

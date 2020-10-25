@@ -10,20 +10,19 @@ import UIKit
 
 class MainRouter {
     
-    static var nc: UINavigationController?
+    weak var nc: UINavigationController?
     
-    static func showModule() {
-        let configurator = MainConfigurator()
+    static func showModule(nc: UINavigationController, type: DocType) {
+        let configurator = MainConfigurator(type: type)
+        configurator.router?.nc = nc
         if let vc = configurator.view {
-            nc = UINavigationController(rootViewController: vc)
-            SceneDelegate.window?.rootViewController = nc
-            SceneDelegate.window?.makeKeyAndVisible()
+            nc.pushViewController(vc, animated: true)
         }
     }
     
-    func makeIPRoute(documentId: String?) {
-        guard let nc = MainRouter.nc else { return }
-        MakeIPRouter.showModule(nc: nc, documentId: documentId)
+    func makeIPRoute(documentId: String?, type: DocType) {
+        guard let nc = nc else { return }
+        MakeIPRouter.showModule(nc: nc, documentId: documentId, type: type)
         
     }
 }
@@ -33,9 +32,9 @@ class MainConfigurator {
     var router: MainRouter?
     var view: ViewController?
     
-    init() {
+    init(type: DocType) {
         if let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ViewController") as? ViewController {
-            viewModel = ChooseDocumentViewModel()
+            viewModel = ChooseDocumentViewModel(type: type)
             view = vc
             router = MainRouter()
             viewModel?.router = router

@@ -9,7 +9,7 @@
 import Foundation
 import RealmSwift
 
-struct OKVED {
+struct OKVED: Equatable {
     let kod: String
     let descr: String
 }

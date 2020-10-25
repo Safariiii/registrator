@@ -16,7 +16,7 @@ class OkvedCellViewModel {
     init(text: String, isChosen: Bool) {
         self.text = text
         if isChosen {
-            backgroundColor = .green
+            backgroundColor = .systemGreen
         } else {
             backgroundColor = .white
         }

@@ -19,12 +19,26 @@ class OkvedTableViewViewModel {
     var selectedCodesArray: [Results<Code>] = []
     var chosenCodes: [OKVED] = []
     var reloadHandler: (() -> Void)?
+    var alertMessage: (() -> Void)?
     var scrollToRow: ((_ indexPath: IndexPath) -> Void)?
     var router: OkvedRouter!
+    var mainOkved: String
+    var collectionName: String
+    var okvedCounter: Int {
+        return chosenCodes.count
+    }
+    var isAlowed: Bool {
+        if chosenCodes.count > 56 {
+            return false
+        }
+        return true
+    }
     
-    init(okveds: [OKVED], id: String) {
+    init(okveds: [OKVED], id: String, mainOkved: String, collectionName: String) {
         chosenCodes = okveds
+        self.collectionName = collectionName
         self.id = id
+        self.mainOkved = mainOkved
     }
     
     func titleForHeaderInSection(section: Int) -> String {
@@ -88,30 +102,49 @@ class OkvedTableViewViewModel {
     
     func didSelectRow(indexPath: IndexPath) {
         if selectedSections != nil {
+            let okvedField = TextFieldType.addOkved
             let kod = selectedCodesArray[indexPath.section][indexPath.row].code!
             if checkIfCodeIsSelected(code: kod) {
                 chosenCodes.removeAll (where: { $0.kod == kod })
+                okvedField.save(text: "", id: id, collectionName: collectionName, okveds: chosenCodes)
+                reloadHandler?()
             } else {
-                let descr = selectedCodesArray[indexPath.section][indexPath.row].descr!
-                let newKod = OKVED(kod: kod, descr: descr)
-                chosenCodes.append(newKod)
+                if isAlowed {
+                    let descr = selectedCodesArray[indexPath.section][indexPath.row].descr!
+                    let newKod = OKVED(kod: kod, descr: descr)
+                    chosenCodes.append(newKod)
+                    okvedField.save(text: "", id: id, collectionName: collectionName, okveds: chosenCodes)
+                    if mainOkved == ". " {
+                        TextFieldType.okveds.save(text: "", id: id, collectionName: collectionName, okveds: [newKod])
+                        mainOkved = "aaa"
+                    }
+                    reloadHandler?()
+                } else {
+                    alertMessage?()
+                }
             }
-            
-            let okvedField = TextFieldType.addOkved
-            okvedField.save(text: "", id: id, okveds: chosenCodes)
-            reloadHandler?()
         } else {
+            let okvedField = TextFieldType.addOkved
             let kod = (realm.object(ofType: Class.self, forPrimaryKey: Constants.okvedClasses[indexPath.section][0])?.codes.sorted(byKeyPath: "code")[indexPath.row].code)!
             if checkIfCodeIsSelected(code: kod) {
                 chosenCodes.removeAll (where: { $0.kod == kod })
+                okvedField.save(text: "", id: id, collectionName: collectionName, okveds: chosenCodes)
+                reloadHandler?()
             } else {
-                let descr = (realm.object(ofType: Class.self, forPrimaryKey: Constants.okvedClasses[indexPath.section][0])?.codes.sorted(byKeyPath: "code")[indexPath.row].descr)!
-                let newKod = OKVED(kod: kod, descr: descr)
-                chosenCodes.append(newKod)
+                if isAlowed {
+                    let descr = (realm.object(ofType: Class.self, forPrimaryKey: Constants.okvedClasses[indexPath.section][0])?.codes.sorted(byKeyPath: "code")[indexPath.row].descr)!
+                    let newKod = OKVED(kod: kod, descr: descr)
+                    chosenCodes.append(newKod)
+                    okvedField.save(text: "", id: id, collectionName: collectionName, okveds: chosenCodes)
+                    if mainOkved == ". " {
+                        TextFieldType.okveds.save(text: "", id: id, collectionName: collectionName, okveds: [newKod])
+                        mainOkved = "aaa"
+                    }
+                    reloadHandler?()
+                } else {
+                    alertMessage?()
+                }
             }
-            let okvedField = TextFieldType.addOkved
-            okvedField.save(text: "", id: id, okveds: chosenCodes)
-            reloadHandler?()
         }
     }
     
