@@ -30,7 +30,7 @@ class ChooseDocumentViewControllerCell: UITableViewCell {
     
     lazy var plusImage: UIImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "plus.circle"))
-        imageView.tintColor = .red
+        imageView.tintColor = .white
         imageView.setSize(width: 30, height: 30)
         return imageView
     }()
@@ -47,7 +47,7 @@ class ChooseDocumentViewControllerCell: UITableViewCell {
     }
     
     func setupViewForFirstCell() {
-        backgroundColor = .systemGray5
+        backgroundColor = .systemGreen
         docTitleLabel.textAlignment = .center
         docTitleLabel.textColor = .black
         

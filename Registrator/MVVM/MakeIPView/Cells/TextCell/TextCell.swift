@@ -9,14 +9,35 @@
 import UIKit
 
 class TextCell: TextFieldCell {
+    
     var viewModel: TextCellViewModel? {
         willSet(viewModel) {
             guard let viewModel = viewModel else { return }
-            textField?.text = viewModel.text
-            titleLabel?.text = viewModel.title
-            textField?.delegate = self
-            setupTitleLabel()
+            initViewModel(viewModel: viewModel)
         }
+    }
+    
+    func initViewModel(viewModel: TextCellViewModel) {
+        textField?.text = viewModel.text
+        titleLabel?.text = viewModel.title
+        textField?.delegate = self
+        if let note = viewModel.type.note {
+            setupNotes()
+            noteLabel?.text = note
+        }
+        if viewModel.type == .citizenship {
+            textField?.isUserInteractionEnabled = false
+            textField?.text = "РФ"
+        } else if viewModel.type == .address {
+            textField?.isUserInteractionEnabled = false
+        }
+        setupTitleLabel()
+    }
+    
+    override func prepareForReuse() {
+        note?.removeFromSuperview()
+        noteLabel?.removeFromSuperview()
+        textField?.isUserInteractionEnabled = true
     }
 }
 
@@ -25,12 +46,16 @@ extension TextCell: UITextFieldDelegate {
         guard let viewModel = viewModel else { return }
         if let text = textField.text {
             viewModel.save(text: text)
+            setupTitleLabel()
         }
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         titleLabel?.animateLabel(y: -20)
         guard let viewModel = viewModel else { return }
+        if let text = viewModel.placeholder {
+            textField.attributedPlaceholder = NSAttributedString(string: text, attributes: [.font : UIFont.systemFont(ofSize: 14)])
+        }
         if viewModel.type == .phoneNumber {
             textField.setupPhoneNumberMask()
         }

@@ -12,11 +12,22 @@ import Firebase
 class PickerCellViewModel: CellViewModel {
 
     var fields: [String]
+    var taxSystem: TaxesSystem?
     
-    init(title: String, text: String, id: String, fields: [String], type: TextFieldType) {
+    init(title: String, text: String, id: String, taxSystem: TaxesSystem?, fields: [String], type: TextFieldType, docType: DocType) {
+        self.taxSystem = taxSystem
         self.fields = fields
-        super.init(title: title, text: text, id: id, type: type)
+        super.init(title: title, text: text, id: id, type: type, docType: docType)
         
+    }
+    
+    var canShowTaxRate: Bool {
+        if type == .taxesRate {
+            if taxSystem == .OSNO {
+                return false
+            }
+        }
+        return true
     }
     
     func titleForRowInPickerView(row: Int) -> String {

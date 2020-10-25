@@ -12,8 +12,8 @@ class GiveMethodCellViewModel: CellViewModel {
 
     var giveMethod: String? = ""
     
-    init(title: String, id: String, giveMethod: String?, type: TextFieldType) {
+    init(title: String, id: String, giveMethod: String?, type: TextFieldType, docType: DocType) {
         self.giveMethod = giveMethod
-        super.init(title: title, text: "", id: id, type: type)
+        super.init(title: title, text: "", id: id, type: type, docType: docType)
     }
 }

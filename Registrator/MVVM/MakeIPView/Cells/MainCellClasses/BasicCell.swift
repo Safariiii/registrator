@@ -22,6 +22,7 @@ class BasicCell: UITableViewCell {
         titleLabel = TitleLabel()
         addSubview(titleLabel!)
         
+        
     }
     
     var textField: UITextField?
@@ -32,6 +33,7 @@ class BasicCell: UITableViewCell {
         if let tf = textField {
             if tf.isEmpty {
                 titleLabel?.transform = CGAffineTransform(translationX: 0, y: 0)
+                textField?.placeholder = ""
             } else {
                 titleLabel?.transform = CGAffineTransform(translationX: 0, y: -20)
             }

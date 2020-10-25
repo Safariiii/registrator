@@ -43,11 +43,21 @@ class OkvedSectionView: UIView {
         layer.borderWidth = 0.3
         layer.borderColor = UIColor.black.cgColor
         heightAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
+        
     }
     
     func setupArrowImage() {
         addSubview(arrowImage)
         arrowImage.setupAnchors(top: topAnchor, leading: nil, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: -10))
+    }
+    
+    func sectionBackgroundColor(viewModel: OkvedTableViewViewModel) -> UIColor {
+        for item in viewModel.chosenCodes {
+            if item.kod[0..<2] == okvedTitleLabel.text?[0..<2] {
+                return .systemGray5
+            }
+        }
+        return .white
     }
     
     func setupOkvedTitleLabel(viewModel: OkvedTableViewViewModel, section: Int) {
@@ -58,9 +68,10 @@ class OkvedSectionView: UIView {
             backgroundColor = .red
             okvedTitleLabel.textColor = .white
         } else {
-            backgroundColor = .white
+            backgroundColor = sectionBackgroundColor(viewModel: viewModel)
             okvedTitleLabel.textColor = .black
         }
+        
     }
     
     func setupExpandButton(section: Int) {

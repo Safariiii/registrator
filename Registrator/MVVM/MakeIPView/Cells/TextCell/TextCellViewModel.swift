@@ -13,9 +13,9 @@ class TextCellViewModel: CellViewModel {
 
     var validateType: ValidateType
     
-    init(title: String, text: String, id: String, validateType: ValidateType, type: TextFieldType) {
+    init(title: String, text: String, id: String, validateType: ValidateType, type: TextFieldType, docType: DocType) {
         self.validateType = validateType
-        super.init(title: title, text: text, id: id, type: type)
+        super.init(title: title, text: text, id: id, type: type, docType: docType)
     }
     
 }

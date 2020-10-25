@@ -28,12 +28,10 @@ class MakeIPViewController: UIViewController {
     
     button2.setTitle()
  */
-    deinit {
-        print("deinit MakeIPViewController")
-    }
     
     func setupCell(indexPath: IndexPath) -> UITableViewCell {
-        guard let viewModel = makeIPViewModel, let step = viewModel.steps else { return UITableViewCell() }
+        guard let viewModel = makeIPViewModel else { return UITableViewCell() }
+        let step = viewModel.steps
         switch step.fields[indexPath.row].group {
         case .text:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? TextCell else { return UITableViewCell() }
@@ -89,7 +87,7 @@ class MakeIPViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
-        setupKeyboard()        
+        setupKeyboard()
     }
     
     func initViewModel() {
@@ -97,8 +95,22 @@ class MakeIPViewController: UIViewController {
         viewModel.reloadHandler = { [weak self] in
             self?.tableView.reloadData()
         }
-        viewModel.addOkvedView = { [weak self] in
-            self?.makeIPViewModel?.okvedRoute()
+        viewModel.addSatusView = { [weak self] view in
+            DispatchQueue.main.async {
+                self?.view.addSubview(view)
+            }
+        }
+        viewModel.showStatusAlert = { [weak self] title, message in
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+//            let action = UIAlertAction(title: "ok", style: UIAlertAction.Style.cancel, handler: nil)
+            let action = UIAlertAction(title: "ok", style: .default) { (action) in
+                if title != "Ошибка" {
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            }
+            alert.addAction(action)
+            self?.present(alert, animated: true, completion: nil)
+            
         }
         if viewModel.isNew {
             let helpView = DocumentView()
@@ -140,15 +152,23 @@ class MakeIPViewController: UIViewController {
             tableViewBottomAnchor?.isActive = false
             tableViewBottomAnchor = tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
             tableViewBottomAnchor?.isActive = true
-            view.removeGestureRecognizer(tap!)
+            
         }
         UIView.animate(withDuration: keyboardDuration ?? 00) {
             self.view.layoutIfNeeded()
+            self.view.removeGestureRecognizer(self.tap!)
         }
     }
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
+        if let tap = tap {
+            print("ok")
+            view.removeGestureRecognizer(tap)
+            self.tap = nil
+        }
+        view.endEditing(false)
+        
     }
 }
 
@@ -159,7 +179,17 @@ extension MakeIPViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
+        guard let step = makeIPViewModel?.steps else { return 60 }
+        if step == .step3 {
+            if step.fields[indexPath.row] == .none || step.fields[indexPath.row] == .addOkved {
+                return 60
+            } else {
+                return 80
+            }
+        } else {
+            return 60
+        }
+        
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

@@ -10,14 +10,18 @@ import UIKit
 
 class NextButtonCell: UITableViewCell {
     
-    //weak
+//    weak
     var viewModel: NextButtonViewModel? {
         willSet(viewModel) {
             guard let viewModel = viewModel else { return }
-            textLabel?.text = viewModel.title
-            backgroundColor = .red
-            textLabel?.textColor = .white
-            textLabel?.textAlignment = .center
+            initViewModel(viewModel: viewModel)
         }
+    }
+    
+    func initViewModel(viewModel: NextButtonViewModel) {
+        textLabel?.text = viewModel.title
+        backgroundColor = .systemGreen
+        textLabel?.textColor = .black
+        textLabel?.textAlignment = .center
     }
 }

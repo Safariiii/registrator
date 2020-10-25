@@ -15,5 +15,6 @@ enum ValidateType {
     case passportCode
     case inn
     case snils
+    case ogrnip
     case none
 }

@@ -18,8 +18,7 @@ class DatePickerCell: TextFieldCell {
     //тут мы создаем UI
     override func awakeFromNib() {
         super.awakeFromNib()
-        textField?.isUserInteractionEnabled = false
-        setupPickerButton()
+        
     }
     // заполняем
     func initViewModel(_ viewModel: CellViewModel?) {
@@ -28,6 +27,8 @@ class DatePickerCell: TextFieldCell {
         
         //setupPickerButton()
         setupTitleLabel()
+        textField?.isUserInteractionEnabled = false
+        setupPickerButton()
     }
 
     // очистить старые данные

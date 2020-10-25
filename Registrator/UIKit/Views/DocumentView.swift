@@ -8,7 +8,7 @@
 import UIKit
 
 fileprivate let secondHelpText = NSLocalizedString(
-    "Для успешной подготовки документов, введите необходимую информацию в Мастер подготовки документов. При заполнении паспортных данных вводите информацию точно также как она указана в паспорте (не используйте сокращений или других склонений)."
+    "Для успешной подготовки документов, введите необходимую информацию в Мастер подготовки документов. При заполнении паспортных данных вводите информацию точно также как она указана в паспорте (не используйте сокращений или других склонений, заполняйте поля в точности до каждой запятой и точки). "
     , comment: "")
 fileprivate let helpText = "Мастер подготовки документов"
 fileprivate let buttonTitle = "Начать"
@@ -29,7 +29,7 @@ class DocumentView: UIView {
         let button = UIButton(
             title: buttonTitle,
             titleColor: .white,
-            backgroundColor: .red,
+            backgroundColor: .systemGreen,
             action: #selector(beginButtonPressed),
             target: self,
             cornerRadius: 7)

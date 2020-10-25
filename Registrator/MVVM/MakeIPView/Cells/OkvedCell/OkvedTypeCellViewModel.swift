@@ -9,8 +9,11 @@
 import Foundation
 class OkvedTypeCellViewModel: CellViewModel {
     
-    init(text: String, id: String, type: TextFieldType) {
-        super.init(title: "", text: text, id: id, type: type)
+    var mainOkved: String
+    
+    init(text: String, id: String, type: TextFieldType, mainOkved: String, docType: DocType) {
+        self.mainOkved = mainOkved
+        super.init(title: "", text: text, id: id, type: type, docType: docType)
     }
 
 }

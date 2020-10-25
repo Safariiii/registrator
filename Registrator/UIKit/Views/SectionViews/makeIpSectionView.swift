@@ -12,19 +12,19 @@ class MakeIpSectionView: UIView {
     var viewModel: MakeIPViewModel
     
     lazy var makeIpSectionTitle: UIButton = {
-        let button = UIButton(titleColor: .white, action: nil, target: nil)
+        let button = UIButton(titleColor: .black, action: nil, target: nil)
         return button
     }()
     
     lazy var prevButton: UIButton = {
         let button = UIButton(action: #selector(prevButtonPressed), target: self, image: UIImage(systemName: "arrow.left"))
-        button.tintColor = .white
+        button.tintColor = .black
         return button
     }()
     
     lazy var nextButton: UIButton = {
         let button = UIButton(titleColor: .white, action: #selector(nextButtonPressed), target: self, image: UIImage(systemName: "arrow.right"))
-        button.tintColor = .white
+        button.tintColor = .black
         
         return button
     }()
@@ -32,15 +32,15 @@ class MakeIpSectionView: UIView {
     init(viewModel: MakeIPViewModel) {
         self.viewModel = viewModel
         super.init(frame: .zero)
-        self.backgroundColor = .red
+        self.backgroundColor = .systemGreen
         heightAnchor.constraint(equalToConstant: 50).isActive = true
         setupSectionTitle()
-        guard let step = viewModel.steps else { return }
-        makeIpSectionTitle.tag = step.rawValue
-        if step != .step1 {
+        let docType = viewModel.docType
+        let step = viewModel.steps
+        if step != docType.steps.first {
             setupPrevButton()
         }
-        if step != .step5 {
+        if step != docType.steps.last {
             setupNextButton()
         }
     }

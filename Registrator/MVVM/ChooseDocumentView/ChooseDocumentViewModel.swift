@@ -14,13 +14,15 @@ class ChooseDocumentViewModel {
     var router: MainRouter!
     var documents: [Document] = []
     var reloadHandler: (() -> Void)?
-    let firebaseService = FirebaseManager()
+    var docType: DocType
     
-    init() {
-        firebaseService.load { (documents) in
-            self.documents = documents
-            self.reloadHandler?()
+    init(type: DocType) {
+        self.docType = type
+        docType.load { [weak self] (documents) in
+            self?.documents = documents
+            self?.reloadHandler?()
         }
+        
     }
 
     func numberOfSections() -> Int {
@@ -31,8 +33,8 @@ class ChooseDocumentViewModel {
         return documents.count
     }
     
-    func titleForHeaderInSection() -> String {
-        return "Документы на регистрацию ИП"
+    var viewControllerTitle: String {
+        return docType.rawValue
     }
     
     func cellViewModel(forIndexPath indexPath: IndexPath) -> ChooseDocumentCellViewModel? {
@@ -43,11 +45,11 @@ class ChooseDocumentViewModel {
     
     func showDocument(indexPath: IndexPath) {
         let documentId = indexPath.row == 0 ? nil : documents[indexPath.row].id
-        router.makeIPRoute(documentId: documentId)
+        router.makeIPRoute(documentId: documentId, type: docType)
     }
     
     func deleteDocument(indexPath: IndexPath) {
         let id = documents[indexPath.row].id
-        firebaseService.deleteDocument(id: id)
+        docType.delete(id: id)
     }
 }

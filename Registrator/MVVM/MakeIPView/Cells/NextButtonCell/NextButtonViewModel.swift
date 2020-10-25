@@ -9,14 +9,8 @@
 import Foundation
 
 class NextButtonViewModel: CellViewModel {
-    weak var cell: NextButtonCell?
     
-    init() {
-        super.init(title: "Далее", text: "", id: "", type: .none)
+    init(type: TextFieldType, docType: DocType) {
+        super.init(title: type.rawValue, text: "", id: "", type: type, docType: docType)
     }
-    
-    deinit {
-        print("deinit NextButtonViewModel")
-    }
-    
 }

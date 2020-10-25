@@ -12,8 +12,8 @@ class AddOkvedViewModel: CellViewModel {
 
     let okveds: [OKVED]
     
-    init(okveds: [OKVED]) {
+    init(okveds: [OKVED], docType: DocType) {
         self.okveds = okveds
-        super.init(title: "Добавить ОКВЭД", text: "", id: "", type: .addOkved)
+        super.init(title: "Добавить ОКВЭД", text: "", id: "", type: .addOkved, docType: docType)
     }
 }

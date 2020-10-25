@@ -6,19 +6,43 @@
 //  Copyright © 2020 Руслан Сафаргалеев. All rights reserved.
 //
 
+fileprivate let searchBarPlaceholder = "Введите ключевые слова для быстрого поиска"
+fileprivate var okvedCounterNumber = "Добавлено оквэдов: 0/57"
+fileprivate let alertTitle = "Внимание!"
+fileprivate let alertMessage = "Максимальное количество кодов ОКВЭД не может превышать 57. Чтобы добавить данный код вам необходимо убрать один из уже добавленных кодов"
+
 import UIKit
 
 class OkvedView: UIViewController {
     
     let searchBar = UISearchBar()
-    let okvedTableView = UITableView()
+    
     var viewModel: OkvedTableViewViewModel?
     let newView = UIView()
     var id: String?
     lazy var okvedDoneButton: UIButton = {
-        let button = UIButton(title: "Готово", titleColor: .white, backgroundColor: .red, action: #selector(doneButtonPressed), target: self, cornerRadius: 7)
-        button.setSize(width: 220, height: 40)
+        let button = UIButton(title: "Готово", titleColor: .black, backgroundColor: .systemGreen, action: #selector(doneButtonPressed), target: self, cornerRadius: 7)
+        button.setSize(width: 180, height: 40)
+        button.drawShadow()
+        button.layer.shadowOffset = CGSize(width: -4.0, height: 7.0)
+        button.layer.shadowRadius = 7
         return button
+    }()
+    
+    lazy var okvedTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.register(OkvedTableViewCell.self, forCellReuseIdentifier: "okvedTableViewCell")
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.separatorColor = .black
+        return tableView
+    }()
+    
+    lazy var okvedCounter: UILabelPadding = {
+        let label = UILabelPadding(fontSize: 15, alignment: .center, numberOfLines: 0)
+        label.backgroundColor = .systemGreen
+        label.setSize(width: 260, height: 40)
+        return label
     }()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -30,15 +54,25 @@ class OkvedView: UIViewController {
         setupSearchBar()
         setupOkvedTableView()
         setupOkvedDoneButton()
+        setupOkvedCounter()
+        view.backgroundColor = .white
     }
     
     func setupHandlers() {
         guard let viewModel = viewModel else { return }
         viewModel.reloadHandler = { [weak self] in
             self?.okvedTableView.reloadData()
+            okvedCounterNumber = "Добавлено оквэдов: \(viewModel.okvedCounter)/57"
+            self?.okvedCounter.text = okvedCounterNumber
         }
-        viewModel.scrollToRow = { indexPath in
-            self.okvedTableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        viewModel.scrollToRow = { [weak self] indexPath in
+            self?.okvedTableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        }
+        viewModel.alertMessage = { [weak self] in
+            let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
+            let action = UIAlertAction(title: "ok", style: UIAlertAction.Style.cancel, handler: nil)
+            alert.addAction(action)
+            self?.present(alert, animated: true, completion: nil)
         }
     }
     
@@ -46,19 +80,27 @@ class OkvedView: UIViewController {
         view.addSubview(searchBar)
         searchBar.delegate = self
         searchBar.setupAnchors(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor)
+        searchBar.searchTextField.attributedPlaceholder = NSAttributedString(string: searchBarPlaceholder, attributes: [.font : UIFont.systemFont(ofSize: 14)])
+        
     }
     
     func setupOkvedTableView() {
         view.addSubview(okvedTableView)
         okvedTableView.setupAnchors(top: searchBar.bottomAnchor, leading: view.leadingAnchor, bottom: view.bottomAnchor, trailing: view.trailingAnchor)
-        okvedTableView.register(OkvedTableViewCell.self, forCellReuseIdentifier: "okvedTableViewCell")
-        okvedTableView.delegate = self
-        okvedTableView.dataSource = self
+        
     }
     
     func setupOkvedDoneButton() {
         view.addSubview(okvedDoneButton)
         okvedDoneButton.setupAnchors(top: nil, leading: nil, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: nil, centerX: view.centerXAnchor, centerY: nil, padding: .init(top: 0, left: 0, bottom: -40, right: 0))
+    }
+    
+    func setupOkvedCounter() {
+        guard let viewModel = viewModel else { return }
+        view.addSubview(okvedCounter)
+        okvedCounter.setupAnchors(top: nil, leading: nil, bottom: okvedDoneButton.topAnchor, trailing: nil, centerX: view.centerXAnchor, padding: .init(top: 0, left: 0, bottom: -20, right: 0))
+        okvedCounterNumber = "Добавлено оквэдов: \(viewModel.okvedCounter)/57"
+        okvedCounter.text = okvedCounterNumber
     }
     
     @objc func doneButtonPressed() {

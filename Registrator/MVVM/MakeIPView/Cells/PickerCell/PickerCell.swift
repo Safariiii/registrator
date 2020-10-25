@@ -12,18 +12,35 @@ class PickerCell: TextFieldCell {
     var viewModel: PickerCellViewModel? {
         willSet(viewModel) {
             guard let viewModel = viewModel else { return }
-            titleLabel?.text = viewModel.title
-            textField?.text = viewModel.text
-            textField?.isUserInteractionEnabled = false
-            setupTitleLabel()
-            setupPickerButton()
+            initViewModel(viewModel: viewModel)
         }
+    }
+    
+    func initViewModel(viewModel: PickerCellViewModel) {
+        note?.removeFromSuperview()
+        pickerButton.isUserInteractionEnabled = true
+        textField?.font = UIFont.systemFont(ofSize: 17)
+        titleLabel?.text = viewModel.title
+        textField?.text = viewModel.text
+        textField?.isUserInteractionEnabled = false
+        if viewModel.canShowTaxRate {
+            setupPickerButton()
+        } else {
+            pickerButton.isUserInteractionEnabled = false
+            textField?.text = "Доступно только при выборе УСН"
+        }
+        if viewModel.type == .taxesSystem  {
+            textField?.font = UIFont.systemFont(ofSize: 14)
+            setupNotes()
+            note?.removeTarget(self, action: #selector(notePressed), for: .touchUpInside)
+            note?.addTarget(self, action: #selector(setupNoteView), for: .touchUpInside)
+        }
+        setupTitleLabel()
     }
 
     //MARK: - pickerButton
-    
+    let pickerButton = UIButton()
     func setupPickerButton() {
-        let pickerButton = UIButton()
         addSubview(pickerButton)
         pickerButton.fillSuperview()
         pickerButton.addTarget(self, action: #selector(pickerButtonPressed), for: .touchUpInside)
@@ -39,6 +56,17 @@ class PickerCell: TextFieldCell {
         if let view = vc?.view {
             view.addSubview(pickerView)
         }
+    }
+    
+    //MARK: - noteView
+    @objc func setupNoteView() {
+        let noteView = NoteView()
+        let tableview = superview as! UITableView
+        let vc = tableview.dataSource as? MakeIPViewController
+        if let view = vc?.view {
+            view.addSubview(noteView)
+        }
+        
     }
 }
 

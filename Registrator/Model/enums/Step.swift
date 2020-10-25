@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Firebase
 
 enum Step: Int, CaseIterable {
     case step1 = 0
@@ -14,16 +15,10 @@ enum Step: Int, CaseIterable {
     case step3 = 2
     case step4 = 3
     case step5 = 4
+    case step10 = 9
+    
     
     static var okveds: [OKVED] = []
-    
-    func createNewDoc(id: String) {
-        for step in Step.sortedSteps {
-            for item in step.fields {
-                item.save(text: "", id: id, okveds: [])
-            }
-        }
-    }
     
     mutating func nextSection() {
         if let nextStep = Step(rawValue: self.rawValue + 1) {
@@ -49,6 +44,8 @@ enum Step: Int, CaseIterable {
             return "Шаг 4: Налогообложение"
         case .step5:
             return "Шаг 5: Способ подачи документов"
+        case .step10:
+            return "Информация об ИП"
         }
     }
     
@@ -72,9 +69,9 @@ enum Step: Int, CaseIterable {
         case .step4:
             return [.taxesSystem, .taxesRate, .none]
         case .step5:
-            return [.giveMethod, .giveMethod, .none]
+            return [.giveMethod, .giveMethod, .buy]
+        case .step10:
+            return [.inn, .ogrnip, .lastName, .firstName, .middleName, .sex, .citizenship, .address, .email, .phoneNumber, .buy]
         }
     }
-    
-    static var sortedSteps: [Step] = [.step1, .step2, .step3, .step4, .step5]
 }

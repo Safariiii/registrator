@@ -39,6 +39,17 @@ extension UITextField {
         }
         return isInLimit(word: letter, num: 14)
     }
+    
+    private func validateOGRNIP(letter: String) -> Bool {
+        if !letter.isBackspace {
+            if self.text?.count == 5 {
+                self.text?.insert(contentsOf: " ", at: self.text!.endIndex)
+            } else if self.text?.count == 11 {
+                self.text?.insert(contentsOf: " ", at: self.text!.endIndex)
+            }
+        }
+        return isInLimit(word: letter, num: 17)
+    }
 
     private func validateSNILS(letter: String) -> Bool {
         if !letter.isBackspace {
@@ -112,6 +123,8 @@ extension UITextField {
             return validateINN(letter: letter)
         case .snils:
             return validateSNILS(letter: letter)
+        case .ogrnip:
+            return validateOGRNIP(letter: letter)
         default:
             return true
         }

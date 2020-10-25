@@ -15,6 +15,7 @@ class AddOkvedCell: UITableViewCell {
             guard let viewModel = viewModel else { return }
             textLabel?.text = viewModel.title
             textLabel?.textAlignment = .center
+            backgroundColor = .systemGray5
         }
     }
 

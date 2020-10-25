@@ -39,5 +39,16 @@ extension UIButton {
         titleLabel?.font = UIFont.systemFont(ofSize: fontSize)
         titleLabel?.numberOfLines = numberOfLines
         titleLabel?.textAlignment = textAlignment
+
     }
+    
+    func drawShadow() {
+        self.layer.masksToBounds = false
+        self.layer.cornerRadius = 8
+        self.layer.shadowColor = UIColor.black.cgColor
+        self.layer.shadowOffset = CGSize(width: -2.0, height: 4.0)
+        self.layer.shadowOpacity = 0.5
+        self.layer.shadowRadius = 4
+    }
+
 }

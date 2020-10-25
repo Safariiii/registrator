@@ -37,6 +37,19 @@ enum TextFieldType: String, CaseIterable {
     case okveds = "Оквэд"
     case none = "Далее"
     case addOkved = "Добавить ОКВЭД"
+    case buy = "Получить Документы"
+    case ogrnip = "ОГРНИП: "
+    
+    func taxesSystem(title: String?) -> TaxesSystem {
+        switch title {
+        case "Общая система налогообложения (ОСНО)":
+            return .OSNO
+        case "Упрощенная система налогообложения (УСН)":
+            return .USN
+        default:
+            return .none
+        }
+    }
     
     var firebaseName: String {
         switch self {
@@ -81,17 +94,87 @@ enum TextFieldType: String, CaseIterable {
         case .giveMethod:
             return "giveMethod"
         case .okveds:
-            return "okveds"
-        case .none:
+            return "mainOkved"
+        case .none, .buy:
             return ""
         case .addOkved:
             return "okveds"
+        case .ogrnip:
+            return "ogrnip"
+        }
+    }
+    
+    var note: String? {
+        switch self {
+        case .lastName, .firstName, .sex, .dateOfBirth, .passportDate, .address, .giveMethod, .okveds, .none, .addOkved, .buy:
+            return nil
+        case .middleName:
+            return "Отчество указывается при наличии"
+        case .citizenship:
+            return "В настоящее время сервис доступен только гражданам РФ"
+        case .email:
+            return "На указанный адрес будет отправлен комплект документов"
+        case .phoneNumber:
+            return "Укажите номер мобильльного телефона"
+        case .passportSeries:
+            return "Необходимо указать 4 цифры серии паспорта"
+        case .passportNumber:
+            return "Необходимо указать 6 цифр номера паспорта"
+        case .passportGiver:
+            return "Необходимо указать в точности так, как указано в паспорте (без использования других склонений или сокращений с точностью до каждой точки и запятой)"
+        case .passportCode:
+            return "Необходимо указать 6 цифр кода подразделения"
+        case .placeOfBirth:
+            return "Необходимо указать в точности так, как указано в паспорте (без использования других склонений или сокращений с точностью до каждой точки и запятой)"
+        case .inn:
+            return "Необходимо указать 12 цифр вашего номера ИНН"
+        case .snils:
+            return "Необходимо указать 11 цифр вашего номера СНИЛС"
+        case .taxesSystem:
+            return "Выберете предпочитаемую системы налогообложения"
+        case .taxesRate:
+            return "Выберете предпочитаемую ставку налогообложения"
+        case .ogrnip:
+            return "Необходимо указать 15 цифр вашего номера ОГРНИП"
+        }
+    }
+    
+    var placeholderTitle: String? {
+        switch self {
+        case .lastName:
+            return "Например: Иванов"
+        case .firstName:
+            return "Например: Иван"
+        case .middleName:
+            return "Например: Иванович"
+        case .email:
+            return "Например: mail@mail.ru"
+        case .phoneNumber:
+            return "Например: +7(999)999-99-99"
+        case .passportSeries:
+            return "Например: 1234"
+        case .passportNumber:
+            return "Например: 123456"
+        case .passportGiver:
+            return "Например: ГУ МВД России по г. Москве"
+        case .passportCode:
+            return "Например: 888-999"
+        case .placeOfBirth:
+            return "Например: г. Москва"
+        case .inn:
+            return "Например: 1234 5678 1234"
+        case .snils:
+            return "Например: 123 456 789 12"
+        case .sex, .citizenship, .dateOfBirth, .taxesSystem, .taxesRate, .giveMethod, .okveds, .none, .addOkved, .passportDate, .address, .buy:
+        return nil
+        case .ogrnip:
+            return "Например: 12345 67891 23456"
         }
     }
     
     var group: TextFieldGroup {
         switch self {
-        case .lastName, .firstName, .middleName, .citizenship, .email, .phoneNumber, .passportSeries, .passportNumber, .passportGiver, .passportCode, .placeOfBirth, .address, .inn, .snils:
+        case .lastName, .firstName, .middleName, .citizenship, .email, .phoneNumber, .passportSeries, .passportNumber, .passportGiver, .passportCode, .placeOfBirth, .address, .inn, .snils, .ogrnip:
             return .text
         case .sex,  .taxesSystem, .taxesRate:
             return .picker
@@ -101,14 +184,14 @@ enum TextFieldType: String, CaseIterable {
             return .giveMethod
         case .okveds:
             return .okveds
-        case .none:
+        case .none, .buy:
             return .none
         case .addOkved:
             return .addOkved
         }
     }
     
-    func save(text: String, id: String, okveds: [OKVED]?) {
+    func save(text: String, id: String, collectionName: String, okveds: [OKVED]?) {
         let db = Firestore.firestore()
         switch self {
         case .addOkved:
@@ -119,13 +202,22 @@ enum TextFieldType: String, CaseIterable {
                 let descr = item.descr
                 okvedsToSave[kod] = descr
             }
-            db.collection("documents").document("CurrentUser").collection("IP").document(id).setData([firebaseName : [:] as Any], merge: true) { (error) in
-                db.collection("documents").document("CurrentUser").collection("IP").document(id).setData([self.firebaseName : okvedsToSave as Any], merge: true) 
+            db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData([firebaseName : [:] as Any], merge: true) { (error) in
+                db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData([self.firebaseName : okvedsToSave as Any], merge: true)
             }
-        case .none, .okveds:
+        case .okveds:
+            guard let okveds = okveds else { return }
+            for item in okveds {
+                db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData([self.firebaseName : [:] as Any], merge: true) { (error) in
+                    db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData([self.firebaseName : [item.kod: item.descr] as Any], merge: true)
+                }
+            }
+        case .none, .buy:
             break
+        case .citizenship:
+            db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData([firebaseName : "РФ"], merge: true)
         default:
-            db.collection("documents").document("CurrentUser").collection("IP").document(id).setData([firebaseName : text], merge: true)
+            db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData([firebaseName : text], merge: true)
         }
     }
 
@@ -144,7 +236,7 @@ enum TextFieldType: String, CaseIterable {
     
     var validateType: ValidateType {
         switch self {
-        case .lastName, .firstName, .middleName, .citizenship, .dateOfBirth, .email, .passportDate, .passportGiver, .placeOfBirth, .address, .taxesSystem, .taxesRate, .giveMethod, .okveds, .none, .sex, .addOkved:
+        case .lastName, .firstName, .middleName, .citizenship, .dateOfBirth, .email, .passportDate, .passportGiver, .placeOfBirth, .address, .taxesSystem, .taxesRate, .giveMethod, .okveds, .none, .sex, .addOkved, .buy:
             return .none
         case .phoneNumber:
             return .phoneNumber
@@ -158,6 +250,8 @@ enum TextFieldType: String, CaseIterable {
             return .inn
         case .snils:
             return .snils
+        case .ogrnip:
+            return .ogrnip
         }
     }
 }
