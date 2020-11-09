@@ -10,5 +10,6 @@ target 'Registrator' do
   pod 'Firebase/Functions'
   pod 'Alamofire', '~> 4.4'
   pod 'SwiftyJSON'
+  pod 'RxSwift', '6.0.0-rc.1'
 
 end

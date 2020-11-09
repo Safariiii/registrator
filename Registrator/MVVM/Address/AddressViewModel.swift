@@ -29,9 +29,13 @@ class AddressVeiwModel {
         step.changeStep()
     }
     
-    func didSelectRowAt(row: Int) {
+    func didSelectRowAt(row: Int, completion: @escaping(() -> Void)) {
         if step == .search {
-            if dataArr.count != 1 {
+            if row == dataArr.count - 1 {
+                parseAddress(text: dataArr.last!.strValue, completion: {
+                    completion()
+                })
+            } else {
                 chosenAddress = dataArr[row]
             }
             changeStep()
@@ -43,13 +47,18 @@ class AddressVeiwModel {
                 router.dismissModule()
                 chosenAddress?.save(id: id, collectionName: docType.collectionName)
                 if let addr = chosenAddress {
-                    findFNS(code: addr.fns)
+                    if docType == .usn {
+                        findFNSforUSNdoc(code: addr.fns)
+                    } else {
+                        findFNS(code: addr.fns)
+                    }
+                    
                 }
             }
         }
     }
     
-    func getFnsRequest(url: String, text: String) -> URLRequest {
+    private func getFnsRequest(url: String, text: String) -> URLRequest {
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = HTTPMethod.post.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -59,6 +68,50 @@ class AddressVeiwModel {
         request.httpBody = try! JSONSerialization.data(withJSONObject: jsonObject)
         return request
     }
+    
+    func makeFNSRequest(url: URL, parameters: [String : Any]) {
+        Alamofire.request(url, method: .post, parameters: parameters).responseJSON { (response) in
+            if response.result.isSuccess {
+                let jsonResponse = JSON(response.result.value!)
+                var newIFNS = IFNS()
+                newIFNS.title = jsonResponse["ifnsDetails"]["ifnsName"].stringValue
+                newIFNS.address = jsonResponse["ifnsDetails"]["ifnsAddr"].stringValue
+                newIFNS.phone = jsonResponse["ifnsDetails"]["ifnsPhone"].stringValue
+                newIFNS.workHours = jsonResponse["ifnsDetails"]["ifnsComment"].stringValue
+                newIFNS.amount = self.docType.dutyAmount
+                newIFNS.receiverKpp = jsonResponse["payeeDetails"]["payeeKpp"].stringValue
+                let fullReceiverTitle = jsonResponse["payeeDetails"]["payeeName"].stringValue
+                newIFNS.receiverTitle = fullReceiverTitle.replacingOccurrences(of: "Управление Федерального казначейства", with: "УФК").replacingOccurrences(of: "Межрайонная инспекция Федеральной налоговой службы", with: "МИФНС России")
+                newIFNS.accountNumber = jsonResponse["payeeDetails"]["payeeAcc"].stringValue
+                newIFNS.bik = jsonResponse["payeeDetails"]["bankBic"].stringValue
+                newIFNS.receiverInn = jsonResponse["payeeDetails"]["payeeInn"].stringValue
+                newIFNS.bank = jsonResponse["payeeDetails"]["bankName"].stringValue
+                newIFNS.kbk = self.docType.kbk
+                newIFNS.code = jsonResponse["ifnsDetails"]["ifnsCode"].stringValue
+                let ifnsAddr = jsonResponse["ifnsDetails"]["ifnsAddr"].stringValue
+                Alamofire.request(self.getFnsRequest(url: "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address", text: ifnsAddr)).responseJSON { (response) in
+                    if response.result.isSuccess {
+                        let jsonResponse = JSON(response.result.value!)
+                        newIFNS.oktmo = jsonResponse["suggestions"][0]["data"]["oktmo"].stringValue
+                        newIFNS.save(collectionName: self.docType.collectionName, id: self.id)
+                    }
+                }
+            }
+        }
+        
+    }
+    private func findFNSforUSNdoc(code: String) {
+        let parameters: [String : Any] = [
+            "c": "next",
+            "step": "1",
+            "npKind": "fl",
+            "ifns": code
+        ]
+        let url = URL(string: "https://service.nalog.ru/addrno-proc.json")
+        guard let urll = url else { return }
+        makeFNSRequest(url: urll, parameters: parameters)
+    }
+    
     
     private func findFNS(code: String) {
         let parameters: [String : Any] = [
@@ -79,34 +132,7 @@ class AddressVeiwModel {
                     "npKind": "fl",
                     "ifns": parentCode
                 ]
-                Alamofire.request(urll, method: .post, parameters: parameters).responseJSON { (response) in
-                    if response.result.isSuccess {
-                        let jsonResponse = JSON(response.result.value!)
-                        var newIFNS = IFNS()
-                        newIFNS.title = jsonResponse["ifnsDetails"]["ifnsName"].stringValue
-                        newIFNS.address = jsonResponse["ifnsDetails"]["ifnsAddr"].stringValue
-                        newIFNS.phone = jsonResponse["ifnsDetails"]["ifnsPhone"].stringValue
-                        newIFNS.workHours = jsonResponse["ifnsDetails"]["ifnsComment"].stringValue
-                        newIFNS.amount = self.docType.dutyAmount
-                        newIFNS.receiverKpp = jsonResponse["payeeDetails"]["payeeKpp"].stringValue
-                        let fullReceiverTitle = jsonResponse["payeeDetails"]["payeeName"].stringValue
-                        newIFNS.receiverTitle = fullReceiverTitle.replacingOccurrences(of: "Управление Федерального казначейства", with: "УФК").replacingOccurrences(of: "Межрайонная инспекция Федеральной налоговой службы", with: "МИФНС России")
-                        newIFNS.accountNumber = jsonResponse["payeeDetails"]["payeeAcc"].stringValue
-                        newIFNS.bik = jsonResponse["payeeDetails"]["bankBic"].stringValue
-                        newIFNS.receiverInn = jsonResponse["payeeDetails"]["payeeInn"].stringValue
-                        newIFNS.bank = jsonResponse["payeeDetails"]["bankName"].stringValue
-                        newIFNS.kbk = self.docType.kbk
-                        newIFNS.code = jsonResponse["ifnsDetails"]["ifnsCode"].stringValue
-                        let ifnsAddr = jsonResponse["ifnsDetails"]["ifnsAddr"].stringValue
-                        Alamofire.request(self.getFnsRequest(url: "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address", text: ifnsAddr)).responseJSON { (response) in
-                            if response.result.isSuccess {
-                                let jsonResponse = JSON(response.result.value!)
-                                newIFNS.oktmo = jsonResponse["suggestions"][0]["data"]["oktmo"].stringValue
-                                newIFNS.save(collectionName: self.docType.collectionName, id: self.id)
-                            }
-                        }
-                    }
-                }
+                self.makeFNSRequest(url: urll, parameters: parameters)
             }
         }
     }
@@ -119,7 +145,7 @@ class AddressVeiwModel {
         }
     }
     
-    func parseAddress(text: String, completion: @escaping(() -> Void)) {
+    private func parseAddress(text: String, completion: @escaping(() -> Void)) {
         let parseURl = "https://cleaner.dadata.ru/api/v1/clean/address"
         var request = URLRequest(url: URL(string: parseURl)!)
         request.httpMethod = HTTPMethod.post.rawValue

@@ -12,6 +12,32 @@ import Firebase
 enum DocType: String, CaseIterable {
     case makeIP = "Документы на регистрацию ИП"
     case deleteIP = "Документы на ликвидацию ИП"
+    case usn = "Заявление для перехода на УСН"
+    
+    enum PositionInSelectView: CaseIterable{
+        case left
+        case right
+    }
+    
+    var position: PositionInSelectView {
+        switch self {
+        case .makeIP, .usn:
+            return .right
+        case .deleteIP:
+            return .left
+        }
+    }
+    
+    var title: String {
+        switch self {
+        case .makeIP:
+            return "Зарегистрировать ИП"
+        case .deleteIP:
+            return "Ликвидировать ИП"
+        case .usn:
+            return "Перейти на УСН (ИП)"
+        }
+    }
     
     var firstStep: Step {
         switch self {
@@ -19,6 +45,8 @@ enum DocType: String, CaseIterable {
             return .step1
         case .deleteIP:
             return .step10
+        case .usn:
+            return .step20
         }
     }
     
@@ -28,6 +56,8 @@ enum DocType: String, CaseIterable {
             return [.step1, .step2, .step3, .step4, .step5]
         case .deleteIP:
             return [.step10]
+        case .usn:
+            return [.step20]
         }
     }
     
@@ -37,6 +67,8 @@ enum DocType: String, CaseIterable {
             return "IP"
         case .deleteIP:
             return "DeleteIP"
+        case .usn:
+            return "Usn"
         }
     }
     
@@ -46,6 +78,8 @@ enum DocType: String, CaseIterable {
             return "createDocument"
         case .deleteIP:
             return "createDeleteIPDocument"
+        case .usn:
+            return "createUSN"
         }
     }
     
@@ -55,6 +89,8 @@ enum DocType: String, CaseIterable {
             return "182 108 07010 01 1000 110"
         case .deleteIP:
             return "182 108 07010 01 1000 110"
+        case .usn:
+            return ""
         }
     }
     
@@ -64,10 +100,13 @@ enum DocType: String, CaseIterable {
             return "800.00"
         case .deleteIP:
             return "160.00"
+        case .usn:
+            return "0.0"
         }
     }
     
     func createNewDoc(id: String, completion: @escaping(() -> Void)) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         for step in steps {
             for item in step.fields {
                 item.save(text: "", id: id, collectionName: collectionName, okveds: [])
@@ -76,21 +115,22 @@ enum DocType: String, CaseIterable {
         let db = Firestore.firestore()
         switch self {
         case .makeIP:
-            db.collection("documents").document("CurrentUser").collection("IP").document(id).setData(["mainOkved" : [:] as Any], merge: true) { (error) in
+            db.collection("documents").document(uid).collection("IP").document(id).setData(["mainOkved" : [:] as Any], merge: true) { (error) in
             }
         default:
             break
         }
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy"
-        db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData(["docDate" : formatter.string(from: Date())], merge: true) { (error) in
+        db.collection("documents").document(uid).collection(collectionName).document(id).setData(["docDate" : formatter.string(from: Date())], merge: true) { (error) in
         }
         completion()
     }
     
     func createTextFields(id: String, completion: @escaping ((File) -> Void)) {
         let db = Firestore.firestore()
-        db.collection("documents").document("CurrentUser").collection(collectionName).document(id).addSnapshotListener { (querySnapshot, error) in
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        db.collection("documents").document(uid).collection(collectionName).document(id).addSnapshotListener { (querySnapshot, error) in
             
             guard let snapshot = querySnapshot else {
                 print("Error retreiving snapshot: \(error!)")
@@ -125,6 +165,7 @@ enum DocType: String, CaseIterable {
         newFile.taxesRate = data["taxesRate"] as? String
         newFile.giveMethod = data["giveMethod"] as? String
         newFile.ogrnip = data["ogrnip"] as? String
+        newFile.usnGiveTime = data["usnGiveTime"] as? String
         
         if let mainOkved = data["mainOkved"] as? [String : String] {
             newFile.mainOkved = [OKVED(kod: "", descr: "")]
@@ -146,8 +187,9 @@ enum DocType: String, CaseIterable {
     }
     
     func load(completion: @escaping (([Document]) -> Void)) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
-        db.collection("documents").document("CurrentUser").collection(collectionName).addSnapshotListener { (querySnapshot, error) in
+        db.collection("documents").document(uid).collection(collectionName).addSnapshotListener { (querySnapshot, error) in
             var documents = [Document]()
             guard let snapshot = querySnapshot else { return }
             documents.append(Document(id: "", title: "Создать новый комплект документов", date: ""))
@@ -165,13 +207,15 @@ enum DocType: String, CaseIterable {
     
     func delete(id: String) {
         let db = Firestore.firestore()
-        db.collection("documents").document("CurrentUser").collection(collectionName).document(id).delete()
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        db.collection("documents").document(uid).collection(collectionName).document(id).delete()
     }
     
     func sendDocument(id: String, waiting: @escaping (() -> Void), completion: @escaping ((String) -> Void)) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         waiting()
         let functions = Functions.functions()
-        functions.httpsCallable(cloudFunctionName).call(["id" : id]) { (result, error) in
+        functions.httpsCallable(cloudFunctionName).call(["id": id, "uid": uid]) { (result, error) in
             if let text = result?.data as? [String: Any] {
                 if let status =  text["data"] as? String {
                     completion(status)

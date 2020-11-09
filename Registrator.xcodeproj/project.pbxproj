@@ -46,6 +46,7 @@
 		A07EB89925449451004E5CE1 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07EB89825449451004E5CE1 /* LoginView.swift */; };
 		A07EB89C25449922004E5CE1 /* LoginRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07EB89B25449922004E5CE1 /* LoginRouter.swift */; };
 		A07EB89E2544997A004E5CE1 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07EB89D2544997A004E5CE1 /* LoginViewModel.swift */; };
+		A07EB8A02545C732004E5CE1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07EB89F2545C732004E5CE1 /* SettingsView.swift */; };
 		A09A34F22534E78F00E29DB8 /* docType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09A34F12534E78F00E29DB8 /* docType.swift */; };
 		A09A34F425372AD700E29DB8 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09A34F325372AD700E29DB8 /* StatusView.swift */; };
 		A09A5A2A251CE8A200136EF8 /* UILabel+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09A5A29251CE8A200136EF8 /* UILabel+extension.swift */; };
@@ -130,6 +131,7 @@
 		A07EB89825449451004E5CE1 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		A07EB89B25449922004E5CE1 /* LoginRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginRouter.swift; sourceTree = "<group>"; };
 		A07EB89D2544997A004E5CE1 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		A07EB89F2545C732004E5CE1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A09A34F12534E78F00E29DB8 /* docType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = docType.swift; sourceTree = "<group>"; };
 		A09A34F325372AD700E29DB8 /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 		A09A5A29251CE8A200136EF8 /* UILabel+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+extension.swift"; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 		A0E2D5432496269900421B78 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A0E2D5452496269900421B78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A0E2D54B249627A600421B78 /* MakeIPViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeIPViewController.swift; sourceTree = "<group>"; };
+		A0E85721254C756E0084381A /* Registrator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Registrator.entitlements; sourceTree = "<group>"; };
 		A0E9768A24E3278B00E8BB24 /* OkvedTableViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OkvedTableViewViewModel.swift; sourceTree = "<group>"; };
 		A0E9769224E4144600E8BB24 /* OkvedTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OkvedTableViewCell.swift; sourceTree = "<group>"; };
 		A0F6850A25248C09007245A9 /* PickerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerCell.swift; sourceTree = "<group>"; };
@@ -222,6 +225,7 @@
 				A09A5A3F2520F2DB00136EF8 /* DatePickerView.swift */,
 				A0353EE02524FCB200698C80 /* TitleLabel.swift */,
 				A09A34F325372AD700E29DB8 /* StatusView.swift */,
+				A07EB89F2545C732004E5CE1 /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -484,6 +488,7 @@
 		A0E2D5362496269100421B78 /* Registrator */ = {
 			isa = PBXGroup;
 			children = (
+				A0E85721254C756E0084381A /* Registrator.entitlements */,
 				56AD57E8252B807C00AEACC9 /* UIKit */,
 				A09A5A2E251E541300136EF8 /* Services */,
 				A0A9C667251A90E900D9BD55 /* extensions */,
@@ -671,6 +676,7 @@
 				A0C0237F251B8BC8000B871E /* View+extension.swift in Sources */,
 				A0E9769324E4144600E8BB24 /* OkvedTableViewCell.swift in Sources */,
 				A0006A62252778FA00C92DFD /* AddOkvedCell.swift in Sources */,
+				A07EB8A02545C732004E5CE1 /* SettingsView.swift in Sources */,
 				A09A34F425372AD700E29DB8 /* StatusView.swift in Sources */,
 				A07EB89E2544997A004E5CE1 /* LoginViewModel.swift in Sources */,
 				A0F6850D25248C1A007245A9 /* TextCell.swift in Sources */,
@@ -853,15 +859,21 @@
 			baseConfigurationReference = C7C0C8B11DE8D9D94BFA776E /* Pods-Registrator.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Registrator/Registrator.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3HD737R8SP;
 				INFOPLIST_FILE = Registrator/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rsleader.Registrator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -872,15 +884,21 @@
 			baseConfigurationReference = E520B1A42872672A28701B8A /* Pods-Registrator.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Registrator/Registrator.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3HD737R8SP;
 				INFOPLIST_FILE = Registrator/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rsleader.Registrator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

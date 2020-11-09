@@ -7,7 +7,7 @@
 //
 
 fileprivate let welcomeText = "Добро пожаловать в REGISTRATOR - самый простой и удобный сервис для подготовки документов для регистрации и ликвидации ИП!"
-fileprivate let secondWelcomeText = "Для начала работы нажмите нужную Вам кнопку и следуйте инструкциям. Весь процесс займет не более 15 минут."
+fileprivate let secondWelcomeText = "Для начала работы нажмите нужную Вам кнопку и следуйте инструкциям. Весь процесс займет не более 15 минут. До 25 ноября 2020 г. наш сервис работает абсолютно БЕСПЛАТНО!"
 fileprivate let screentitle = "REGISTRATOR"
 fileprivate let deleteIPButtonTitle = "Ликвидировать ИП"
 fileprivate let makeIPButtonTitle = "Зарегистрировать ИП"
@@ -28,65 +28,55 @@ class SelectViewController: UIViewController {
     func setupView() {
         view.backgroundColor = .white
         title = screentitle
+        setupSettingsButton()
         setupWelcomeLabel()
         if Auth.auth().currentUser == nil {
             viewModel?.goToLoginView()
         }
     }
     
-    //MARK: - makeIPButton
-    
-    lazy var makeIpButton: UIButton = {
-        let button = UIButton(title: makeIPButtonTitle, backgroundColor: .systemGreen, action: #selector(makeIpButtonPressed), target: self, cornerRadius: 5, fontSize: 18, numberOfLines: 1, textAlignment: .center, image: nil)
+    //MARK: - makeDocButton
+    var makeDocButton: UIButton {
+        let button = UIButton(backgroundColor: .systemGreen, action: nil, target: nil, cornerRadius: 5, fontSize: 18, numberOfLines: 1, textAlignment: .center, image: nil)
         button.drawShadow()
         return button
-    }()
+    }
     
-    @objc func makeIpButtonPressed() {
+    @objc func makeDocButtonPressed(sender: UIButton) {
         guard let viewModel = viewModel else { return }
         UIView.animate(withDuration: 0.1, delay: 0, options: .curveLinear, animations: {
-            self.makeIpButton.transform = CGAffineTransform(translationX: -6, y: 8)
-            self.makeIpButton.layer.shadowOpacity = 0
+            sender.transform = CGAffineTransform(translationX: -6, y: 8)
+            sender.layer.shadowOpacity = 0
         }) { (true) in
-            viewModel.makeIpButtonPressed()
-            self.makeIpButton.transform = CGAffineTransform(translationX: 0, y: 0)
-            self.makeIpButton.layer.shadowOpacity = 0.5
+            viewModel.makeDocButtonPressed(tag: sender.tag)
+            sender.transform = CGAffineTransform(translationX: 0, y: 0)
+            sender.layer.shadowOpacity = 0.5
         }
     }
     
-    func setupMakeIpButton() {
-        view.addSubview(makeIpButton)
-        makeIpButton.setupAnchors(top: iWantLabel.bottomAnchor, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 20, left: 0, bottom: 0, right: -10))
-        makeIpButton.setSize(width: 215, height: 45)
-    }
-    
-    //MARK: - deleteIPButton
-    
-    lazy var deleteIpButton: UIButton = {
-        let button = UIButton(title: deleteIPButtonTitle, backgroundColor: .systemGreen, action: #selector(deleteIpButtonPressed), target: self, cornerRadius: 5, fontSize: 20, numberOfLines: 1, textAlignment: .center, image: nil)
-        button.drawShadow()
-        return button
-    }()
-    
-    @objc func deleteIpButtonPressed() {
+    func setupDocButton() {
         guard let viewModel = viewModel else { return }
-        UIView.animate(withDuration: 0.1, delay: 0, options: .curveLinear, animations: {
-            self.deleteIpButton.transform = CGAffineTransform(translationX: -6, y: 8)
-            self.deleteIpButton.layer.shadowOpacity = 0
-        }) { (true) in
-            viewModel.deleteIpButtonPressed()
-            self.deleteIpButton.transform = CGAffineTransform(translationX: 0, y: 0)
-            self.deleteIpButton.layer.shadowOpacity = 0.5
+        var buttonsArray = [UIButton]()
+        viewModel.createButtons { [weak self] (title, position) in
+            guard let self = self else { return }
+            let btn = self.makeDocButton
+            self.view.addSubview(btn)
+            btn.setTitle(title, for: .normal)
+            btn.setSize(width: 215, height: 45)
+            btn.addTarget(self, action: #selector(self.makeDocButtonPressed), for: .touchUpInside)
+            btn.tag = buttonsArray.count
+            if buttonsArray.count == 0 {
+                btn.setupAnchors(top: self.iWantLabel.bottomAnchor, leading: nil, bottom: nil, trailing: self.view.trailingAnchor, padding: .init(top: 20, left: 0, bottom: 0, right: -10))
+            } else {
+                if position == .right {
+                    btn.setupAnchors(top: buttonsArray.last?.bottomAnchor, leading: nil, bottom: nil, trailing: self.view.trailingAnchor, padding: .init(top: 20, left: 0, bottom: 0, right: -10))
+                } else if position == .left {
+                    btn.setupAnchors(top: buttonsArray.last?.bottomAnchor, leading: self.view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 20, left: 10, bottom: 0, right: 0))
+                }
+            }
+            buttonsArray.append(btn)
         }
     }
-    
-    func setupDeleteIpButton() {
-        view.addSubview(deleteIpButton)
-        deleteIpButton.setupAnchors(top: makeIpButton.bottomAnchor, leading: view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 20, left: 10, bottom: 0, right: 0))
-        deleteIpButton.setSize(width: 215, height: 45)
-    }
-    
-    
     
     //MARK: - WelcomeLabel
     
@@ -145,36 +135,35 @@ class SelectViewController: UIViewController {
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveLinear, animations: {
             self.iWantLabel.alpha = 1
         }) { (true) in
-            self.setupMakeIpButton()
-            self.setupDeleteIpButton()
-            self.setupLogoutButton()
+            self.setupDocButton()
         }
     }
     
     //MARK: - LogoutButton
     
-    lazy var logoutLabel: UILabel = {
-        guard let email = Auth.auth().currentUser?.email else { return UILabel() }
-        let label = UILabel(text: "Вы вошли как: \(email)")
-        return label
-    }()
     
-    lazy var logoutButton: UIButton = {
-        let button = UIButton(title: "Выйти", titleColor: .link, action: #selector(logoutButtonPressed), target: self, image: nil)
+    
+    //MARK: - SettingsButton
+    
+    lazy var settingsButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(image: UIImage(systemName: "paperclip"), style: .plain, target: self, action: #selector(settingsButtonPressed))
+        button.tintColor = .black
         return button
     }()
     
-    @objc func logoutButtonPressed() {
-        guard let viewModel = viewModel else { return }
-        viewModel.logoutButtonPressed()
+    @objc func settingsButtonPressed() {
+        guard let nc = navigationController else { return }
+        let sv = SettingsView(nc: nc)
+        view.addSubview(sv)
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
+        sv.disable = { [weak self] in
+            self?.navigationItem.rightBarButtonItem?.isEnabled = true
+        }
     }
     
-    func setupLogoutButton() {
-        let sv = UIStackView(arrangedSubviews: [logoutLabel, logoutButton])
-        sv.alignment = .center
-        sv.axis = .vertical
-        view.addSubview(sv)
-        sv.setupAnchors(top: nil, leading: nil, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: nil, centerX: view.centerXAnchor, padding: .init(top: 0, left: 0, bottom: -30, right: 0))
+    func setupSettingsButton() {
+        self.navigationItem.rightBarButtonItem = settingsButton
         
     }
+    
 }

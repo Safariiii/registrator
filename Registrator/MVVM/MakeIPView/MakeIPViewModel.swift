@@ -6,14 +6,10 @@
 //  Copyright © 2020 Руслан Сафаргалеев. All rights reserved.
 //
 
-fileprivate let okTitle = "Успешно"
-fileprivate let okMessage = "Документы успешно сформированы и отправлены на адрес электронной почты, которая была указана в форме. Дальнейшие шаги по подаче документов содержатся в высланном Вам письме. Спасибо, что воспользовались нашим сервисом!"
-fileprivate let errorTitle = "Ошибка"
-fileprivate let errorMessage = "К сожалению нам не удалось отправить письмо на адрес электронной почты, указанной Вами при заполнении формы. Попробуйте указать другой адрес и заново повторите попытку."
-
 import Foundation
 import Firebase
 import FirebaseFunctions
+import RxSwift
 
 class MakeIPViewModel {
     
@@ -26,6 +22,7 @@ class MakeIPViewModel {
     var addSatusView: ((UIView) -> Void)?
     var steps: Step
     var docType: DocType
+    let disposeBag = DisposeBag()
     
     
     init(id: String, isNew: Bool, type: DocType) {
@@ -72,42 +69,7 @@ class MakeIPViewModel {
     }
     
     func didSelectRow(index: Int) {
-        let field = steps.fields[index]
-        
-        if field == .giveMethod {
-            field.save(text: newFile!.giveMethods[index], id: id, collectionName: docType.collectionName, okveds: nil)
-            reloadHandler?()
-        } else if field == .none {
-            nextButtonPressed()
-            reloadHandler?()
-        } else if field == .addOkved {
-            guard let okveds = newFile?.okveds, let mo = newFile?.mainOkved else { return }
-            let mainOkved = "\(mo[0].kod). \(mo[0].descr)"
-            router.okvedRoute(okveds: okveds, id: id, mainOkved: mainOkved, collectionName: docType.collectionName)
-        } else if field == .address {
-            guard let address = newFile?.address else { return }
-            router.addressRouter(id: id, address: address, docType: docType)
-        } else if field == .okveds {
-            guard let okveds = newFile?.okveds else { return }
-            field.save(text: "", id: id, collectionName: docType.collectionName, okveds: [okveds[index]])
-        } else if field == .buy {
-            guard let file = newFile else { return }
-            if file.errors.count > 0 {
-                self.showStatusAlert?(errorTitle, file.errorMessage)
-            } else {
-                let statusView = StatusView()
-                docType.sendDocument(id: id, waiting: {
-                    self.addSatusView?(statusView)
-                }) { [weak self] (status) in
-                    statusView.removeFromSuperview()
-                    if status == "ok" {
-                        self?.showStatusAlert?(okTitle, okMessage)
-                    } else if status == "error" {
-                        self?.showStatusAlert?(errorTitle, errorMessage)
-                    }
-                }
-            }
-        }
+        steps.fields[index].didSelectRow(newFile: newFile, docType: docType, id: id, index: index, reloadHandler: reloadHandler, nextButtonPressed: nextButtonPressed, addSatusView: addSatusView, showStatusAlert: showStatusAlert, router: router)
     }
     
     func cellViewModel(indexPath: IndexPath) -> CellViewModel? {
@@ -115,24 +77,6 @@ class MakeIPViewModel {
         let item = steps.fields[indexPath.row]
         let text = newFile.cellText(title: item.rawValue, row: indexPath.row)
         
-        switch item.group {
-        case .text:
-            return TextCellViewModel(title: item.rawValue, text: text, id: id, validateType: item.validateType, type: item, docType: docType)
-        case .picker:
-            return PickerCellViewModel(title: item.rawValue, text: text, id: id, taxSystem: item.taxesSystem(title: newFile.taxesSystem), fields: item.selectFields, type: item, docType: docType)
-        case .datePicker:
-            return CellViewModel(title: item.rawValue, text: text, id: id, type: item, docType: docType)
-        case .giveMethod:
-            return GiveMethodCellViewModel(title: text, id: id, giveMethod: newFile.giveMethod, type: item, docType: docType)
-        case .okveds:
-            guard let mo = newFile.mainOkved else { return CellViewModel(title: "", text: "", id: "", type: .none, docType: .makeIP) }
-            let mainOkved = "\(mo[0].kod). \(mo[0].descr)"
-            return OkvedTypeCellViewModel(text: text, id: id, type: item, mainOkved: mainOkved, docType: docType)
-        case .none:
-            return NextButtonViewModel(type: item, docType: docType)
-        case .addOkved:
-            guard let okveds = newFile.okveds else { return CellViewModel(title: "", text: "", id: "", type: .none, docType: .makeIP) }
-            return AddOkvedViewModel(okveds: okveds, docType: docType)
-        }
+        return item.group.cellViewModel(indexPath: indexPath, item: item, text: text, newFile: newFile, id: id, docType: docType)
     }
 }

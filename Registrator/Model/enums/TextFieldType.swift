@@ -8,10 +8,20 @@
 
 import Foundation
 import Firebase
+import RxSwift
 
 fileprivate let genders = ["", "Мужской", "Женский"]
 fileprivate let taxSystem = ["", "Общая система налогообложения (ОСНО)", "Упрощенная система налогообложения (УСН)"]
 fileprivate let taxRate = ["", "Доходы (6% от всех доходов)", "Доходы минус расходы (от 5% до 15%)"]
+fileprivate let giveTime = ["", "С момента регистрации ИП", "Не более 30 дней после регистрации ИП", "C 1-го числа следующего месяца", "С 1-го января следующего года"]
+fileprivate let okTitle = "Успешно"
+fileprivate let okMessage = "Документы успешно сформированы и отправлены на адрес электронной почты, которая была указана в форме. Дальнейшие шаги по подаче документов содержатся в высланном Вам письме. Спасибо, что воспользовались нашим сервисом!"
+fileprivate let errorTitle = "Ошибка"
+fileprivate let errorMessage = "К сожалению нам не удалось отправить письмо на адрес электронной почты, указанной Вами при заполнении формы. Попробуйте указать другой адрес и заново повторите попытку."
+
+protocol aaa {
+    
+}
 
 enum TextFieldType: String, CaseIterable {
     case lastName = "Фамилия: "
@@ -39,6 +49,7 @@ enum TextFieldType: String, CaseIterable {
     case addOkved = "Добавить ОКВЭД"
     case buy = "Получить Документы"
     case ogrnip = "ОГРНИП: "
+    case usnGiveTime = "Момент перехода на УСН: "
     
     func taxesSystem(title: String?) -> TaxesSystem {
         switch title {
@@ -101,6 +112,8 @@ enum TextFieldType: String, CaseIterable {
             return "okveds"
         case .ogrnip:
             return "ogrnip"
+        case .usnGiveTime:
+            return "usnGiveTime"
         }
     }
     
@@ -136,6 +149,8 @@ enum TextFieldType: String, CaseIterable {
             return "Выберете предпочитаемую ставку налогообложения"
         case .ogrnip:
             return "Необходимо указать 15 цифр вашего номера ОГРНИП"
+        case .usnGiveTime:
+            return "Необходимо указать момент перехода на упрощенную систему налогообложения"
         }
     }
     
@@ -165,7 +180,7 @@ enum TextFieldType: String, CaseIterable {
             return "Например: 1234 5678 1234"
         case .snils:
             return "Например: 123 456 789 12"
-        case .sex, .citizenship, .dateOfBirth, .taxesSystem, .taxesRate, .giveMethod, .okveds, .none, .addOkved, .passportDate, .address, .buy:
+        case .sex, .citizenship, .dateOfBirth, .taxesSystem, .taxesRate, .giveMethod, .okveds, .none, .addOkved, .passportDate, .address, .buy, .usnGiveTime:
         return nil
         case .ogrnip:
             return "Например: 12345 67891 23456"
@@ -176,7 +191,7 @@ enum TextFieldType: String, CaseIterable {
         switch self {
         case .lastName, .firstName, .middleName, .citizenship, .email, .phoneNumber, .passportSeries, .passportNumber, .passportGiver, .passportCode, .placeOfBirth, .address, .inn, .snils, .ogrnip:
             return .text
-        case .sex,  .taxesSystem, .taxesRate:
+        case .sex,  .taxesSystem, .taxesRate, .usnGiveTime:
             return .picker
         case .dateOfBirth, .passportDate:
             return .datePicker
@@ -192,6 +207,7 @@ enum TextFieldType: String, CaseIterable {
     }
     
     func save(text: String, id: String, collectionName: String, okveds: [OKVED]?) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
         switch self {
         case .addOkved:
@@ -202,22 +218,74 @@ enum TextFieldType: String, CaseIterable {
                 let descr = item.descr
                 okvedsToSave[kod] = descr
             }
-            db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData([firebaseName : [:] as Any], merge: true) { (error) in
-                db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData([self.firebaseName : okvedsToSave as Any], merge: true)
+            db.collection("documents").document(uid).collection(collectionName).document(id).setData([firebaseName : [:] as Any], merge: true) { (error) in
+                db.collection("documents").document(uid).collection(collectionName).document(id).setData([self.firebaseName : okvedsToSave as Any], merge: true)
             }
         case .okveds:
             guard let okveds = okveds else { return }
             for item in okveds {
-                db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData([self.firebaseName : [:] as Any], merge: true) { (error) in
-                    db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData([self.firebaseName : [item.kod: item.descr] as Any], merge: true)
+                db.collection("documents").document(uid).collection(collectionName).document(id).setData([self.firebaseName : [:] as Any], merge: true) { (error) in
+                    db.collection("documents").document(uid).collection(collectionName).document(id).setData([self.firebaseName : [item.kod: item.descr] as Any], merge: true)
                 }
             }
         case .none, .buy:
             break
         case .citizenship:
-            db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData([firebaseName : "РФ"], merge: true)
+            db.collection("documents").document(uid).collection(collectionName).document(id).setData([firebaseName : "РФ"], merge: true)
         default:
-            db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData([firebaseName : text], merge: true)
+            db.collection("documents").document(uid).collection(collectionName).document(id).setData([firebaseName : text], merge: true)
+        }
+    }
+    
+    func didSelectRow(newFile: File?, docType: DocType, id: String, index: Int, reloadHandler: (() -> Void)?, nextButtonPressed: () -> Void, addSatusView: ((UIView) -> Void)?, showStatusAlert: ((String, String) -> Void)?, router: MakeIPRouter) {
+        switch self {
+        case .address:
+            guard let address = newFile?.address else { return }
+            router.addressRouter(id: id, address: address, docType: docType)
+        case .giveMethod:
+            guard let giveMethod = newFile?.giveMethods[index] else { return }
+            save(text: giveMethod, id: id, collectionName: docType.collectionName, okveds: nil)
+            reloadHandler?()
+        case .okveds:
+            guard let okveds = newFile?.okveds else { return }
+            save(text: "", id: id, collectionName: docType.collectionName, okveds: [okveds[index]])
+        case .none:
+            nextButtonPressed()
+            reloadHandler?()
+        case .addOkved:
+            if OKVEDManager.isUpdating {
+                let statusView = StatusView(status: .okvedUpdate)
+                let disposeBag = DisposeBag()
+                addSatusView?(statusView)
+                OKVEDManager.subject.subscribe(onNext: { (status) in
+                    if status == false {
+                        statusView.removeFromSuperview()
+                    }
+                }).disposed(by: disposeBag)
+            } else {
+                guard let okveds = newFile?.okveds, let mo = newFile?.mainOkved else { return }
+                let mainOkved = "\(mo[0].kod). \(mo[0].descr)"
+                router.okvedRoute(okveds: okveds, id: id, mainOkved: mainOkved, collectionName: docType.collectionName)
+            }
+        case .buy:
+            guard let file = newFile else { return }
+            if file.errors.count > 0 {
+                showStatusAlert?(errorTitle, file.errorMessage)
+            } else {
+                let statusView = StatusView(status: .send)
+                docType.sendDocument(id: id, waiting: {
+                    addSatusView?(statusView)
+                }) { status in
+                    statusView.removeFromSuperview()
+                    if status == "ok" {
+                        showStatusAlert?(okTitle, okMessage)
+                    } else if status == "error" {
+                        showStatusAlert?(errorTitle, errorMessage)
+                    }
+                }
+            }
+        default:
+            break
         }
     }
 
@@ -229,6 +297,8 @@ enum TextFieldType: String, CaseIterable {
             return taxSystem
         case .taxesRate:
             return taxRate
+        case .usnGiveTime:
+            return giveTime
         default:
             return []
         }
@@ -236,7 +306,7 @@ enum TextFieldType: String, CaseIterable {
     
     var validateType: ValidateType {
         switch self {
-        case .lastName, .firstName, .middleName, .citizenship, .dateOfBirth, .email, .passportDate, .passportGiver, .placeOfBirth, .address, .taxesSystem, .taxesRate, .giveMethod, .okveds, .none, .sex, .addOkved, .buy:
+        case .lastName, .firstName, .middleName, .citizenship, .dateOfBirth, .email, .passportDate, .passportGiver, .placeOfBirth, .address, .taxesSystem, .taxesRate, .giveMethod, .okveds, .none, .sex, .addOkved, .buy, .usnGiveTime:
             return .none
         case .phoneNumber:
             return .phoneNumber

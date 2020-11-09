@@ -12,12 +12,12 @@ import FirebaseFunctions
 class ViewController: UIViewController {
     
     var viewModel: ChooseDocumentViewModel?
-    var okvedManager = OKVEDManager()
+//    var okvedManager = OKVEDManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
-        okvedManager.checkForUpdates(view: view)
+//        okvedManager.checkForUpdates(view: view)
         initViewModel()
         guard let viewModel = viewModel else { return }
         title = viewModel.viewControllerTitle

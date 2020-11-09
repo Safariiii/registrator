@@ -33,6 +33,7 @@ struct Address {
     var strValue = ""
     
     func save(id: String, collectionName: String) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
         var addressToSave: [String : String] = [:]
         addressToSave["index"] = index
@@ -52,9 +53,10 @@ struct Address {
         addressToSave["housing"] = housing
         addressToSave["appartementType"] = appartementType
         addressToSave["appartement"] = appartement
+        addressToSave["fnsCode"] = fns
         
-        db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData(["addressCollection" : [:] as Any, "address" : strValue], merge: true) { (error) in
-            db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData(["addressCollection" : addressToSave as Any], merge: true)
+        db.collection("documents").document(uid).collection(collectionName).document(id).setData(["addressCollection" : [:] as Any, "address" : strValue], merge: true) { (error) in
+            db.collection("documents").document(uid).collection(collectionName).document(id).setData(["addressCollection" : addressToSave as Any], merge: true)
         }
         
     }

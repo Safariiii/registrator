@@ -22,8 +22,9 @@ let transporter = nodemailer.createTransport({
 
 exports.createDocument = functions.https.onCall((data, context) => {
     const id = data.id;
+    const uid = data.uid;
     
-    return admin.firestore().collection('documents').doc("CurrentUser").collection('IP').doc(id).get().then(document => {
+    return admin.firestore().collection('documents').doc(uid).collection('IP').doc(id).get().then(document => {
         const lastName = document.data().lastName;
         const firstName = document.data().firstName;
         const middleName = document.data().middleName;
@@ -484,9 +485,9 @@ exports.createDocument = functions.https.onCall((data, context) => {
 
 exports.createDeleteIPDocument = functions.https.onCall((data, context) => {
     const id = data.id;
-    console.log(id);
+    const uid = data.uid;
     
-    return admin.firestore().collection('documents').doc("CurrentUser").collection('DeleteIP').doc(id).get().then(document => {
+    return admin.firestore().collection('documents').doc(uid).collection('DeleteIP').doc(id).get().then(document => {
         const lastName = document.data().lastName;
         const firstName = document.data().firstName;
         const middleName = document.data().middleName;
@@ -761,6 +762,185 @@ exports.createDeleteIPDocument = functions.https.onCall((data, context) => {
         }, (error) => {
             return {
                 data: "error"
+            };
+        });
+    });
+});
+
+exports.createUSN = functions.https.onCall((data, context) => {
+    const id = data.id;
+    const uid = data.uid;
+    
+    return admin.firestore().collection('documents').doc(uid).collection('Usn').doc(id).get().then(document => {
+        const lastName = document.data().lastName;
+        const firstName = document.data().firstName;
+        const middleName = document.data().middleName;
+        var inn = document.data().inn;
+        const email = document.data().email;
+        const ifnsCode = document.data().addressCollection["fnsCode"];
+        const ifns = document.data().ifns;
+        const taxesRate = document.data().taxesRate;
+        const usnGiveTime = document.data().usnGiveTime;
+                
+        return new Promise((resolve, reject) => {
+            const bucketName = 'registrator-3c860.appspot.com';
+            const usnPath = 'usn.xlsx'
+            const storage = new Storage();
+            
+            function insertWord(page, count, word, start, row, skip, stop) {
+                const alph = ['B', 'E', 'H', 'K', 'N', 'Q', 'T', 'W', 'Z', 'AC', 'AF', 'AI', 'AL', 'AO', 'AR', 'AU', 'AX', 'BA', 'BD', 'BG', 'BJ', 'BM', 'BP', 'BS', 'BV', 'BY', 'CB', 'CE', 'CH', 'CK', 'CN', 'CQ', 'CT', 'CW', 'CZ', 'DC', 'DF', 'DI', 'DL', 'DO']
+                var ind = alph.indexOf(start);
+                var rows = row;
+                for (let i = 0; i < count; i++) {
+                    if (i===stop) {
+                        break;
+                    }
+                    if (skip.indexOf(i) !== -1) {
+                        ind += 1;
+                    }
+                    const cellStr = alph[ind]+rows;
+                    const cell = page.getCell(cellStr);
+                    cell.value = word.slice(i, i+1);
+                    ind += 1;
+                    if (ind === alph.length) {
+                        ind = 0;
+                        rows = String(Number(rows)+2);
+                    }
+                }
+            }
+            
+            function getTaxPayerCode() {
+                if (usnGiveTime === "С момента регистрации ИП") {
+                    return "1"
+                } else if (usnGiveTime === "Не более 30 дней после регистрации ИП") {
+                    return "2"
+                } else if (usnGiveTime === "C 1-го числа следующего месяца") {
+                    return "2"
+                } else {
+                    return "3"
+                }
+            }
+            
+            function getDateCode() {
+                if (usnGiveTime === "С момента регистрации ИП") {
+                    return "2"
+                } else if (usnGiveTime === "Не более 30 дней после регистрации ИП") {
+                    return "2"
+                } else if (usnGiveTime === "C 1-го числа следующего месяца") {
+                    return "3"
+                } else {
+                    return "1"
+                }
+            }
+            
+            async function createWorkbook() {
+                return new Promise((resolve, reject) => {
+                    let file = storage.bucket(bucketName).file('usn_' + id + '.xlsx');
+                    var chunks = [];
+                    
+                    const stream = storage.bucket(bucketName).file(usnPath).createReadStream()
+                    .on('error', function(err) {
+                        console.log(err);
+                    })
+                    .on('response', function(response) {
+                        console.log('response: ' + response);
+                    }).on('data', function(data) {
+                        chunks.push(data);
+                    })
+                    .on('finish', async function() {
+                        const data = Buffer.concat(chunks);
+                        const workbook = new Excel.Workbook();
+                        await workbook.xlsx.load(data);
+                        const page = workbook.worksheets[0];
+                        
+                        //фио
+                        const fio = lastName + ' ' + firstName + ' ' + middleName
+                        insertWord(page, fio.length, fio, 'B', '15', [], 160);
+                        //инн
+                        inn = inn.replace(/ /gi, '');
+                        insertWord(page, inn.length, inn, 'AL', '1', [], 12);
+                        //код
+                        insertWord(page, ifnsCode.length, ifnsCode, 'AO', '11', [], 4);
+                        //признак налогоплательщика
+                        const payerCell = page.getCell('CQ11');
+                        payerCell.value = getTaxPayerCode();
+                        //код даты перехода на упрощенку
+                        const dateCell = page.getCell('AZ24');
+                        dateCell.value = getDateCode();
+                        //дата перехода на упрощенку
+                        var now = new Date();
+                        var current = new Date(now.getFullYear(), now.getMonth(), 1);
+                        if (getDateCode() === "1") {
+                            const nextYear = current.getFullYear() + 1;
+                            const strYear = nextYear.toString();
+                            insertWord(page, strYear.length, strYear, 'T', '26', [], 4);
+                        } else if (getDateCode() === "3") {
+                            const nextMonth = new Date(current.getFullYear(), current.getMonth() + 1, 1);
+                            const year = nextMonth.getFullYear();
+                            const month = nextMonth.getMonth() + 1;
+                            const strYear = year.toString();
+                            const strMonth = month.toString();
+                            const date = "01" + strMonth + strYear;
+                            insertWord(page, date.length, date, 'CH', '26', [2, 4], 8);
+                        }
+                        //дата подачи заявления
+                        insertWord(page, now.getFullYear().toString().length, now.getFullYear().toString(), 'BY', '32', [], 4);
+                        
+                        
+                        if (taxesRate === "Доходы (6% от всех доходов)") {
+                            const cell = page.getCell('AT29');
+                            cell.value = '1';
+                        } else {
+                            const cell = page.getCell('AT29');
+                            cell.value = '2';
+                        }
+                        await workbook.xlsx.write(file.createWriteStream());
+                        resolve();
+                    })
+                    .resume();
+                });
+            }
+            
+            createWorkbook().then(async ()=>{
+                const options = {
+                version: 'v4',
+                action: 'read',
+                expires: Date.now() + 60 * 60 * 1000, // 60 minutes
+                };
+                const [url] = await storage.bucket(bucketName).file('usn_' + id + '.xlsx').getSignedUrl(options);
+                return url;
+                
+            }).then((url) => {
+                var attachments = [{filename: 'Уведомление о переходе на УСН.xlsx', path: url}]
+                var letter = '<p><b>Спасибо, что воспользовались нашим сервисом!</b></p><p>Для успешной подачи уведомления о переходе на УСН вам необходимо совершить следующие действия:</p><ul>'
+                letter += '<li>В Заявлении о переходе на УСН в нижней левой части листа необходимо поставить свою подпись и вписать дату подачи документов. Дату можно вписать либо <b>черной</b> ручкой либо на компьютере. <b>Заявление необходимо распечатать в 3-х экземплярах(один вам вернут с отметкой налогового органа)</b></li>'
+                letter += '<li>Подайте 3 копии уведомления в ' + ifns["title"] + ', адрес: ' + ifns["address"] + ', время работы: ' + ifns["workHours"] + '</li></ul>'
+                
+                var mailOptions = {
+                    from: '"Registrator" <taxregistrator@gmail.com>',
+                to: email,
+                subject: 'Документы о переходе на УСН ИП ' + lastName + ' ' + firstName + ' ' + middleName,
+                text: 'Документы о переходе на УСН ИП ' + lastName + ' ' + firstName + ' ' + middleName,
+                html: letter,
+                attachments: attachments
+                };
+                return transporter.sendMail(mailOptions, function(error, info){
+                    if (error) {
+                        reject(new Error("wrongEmail"));
+                    } else {
+                        resolve();
+                    }
+                });
+            }).catch(err => {
+                console.log(err);
+            });
+        }).then(() => {
+            return {
+            data: "ok"
+            };
+        }, (error) => {
+            return {
+            data: "error"
             };
         });
     });

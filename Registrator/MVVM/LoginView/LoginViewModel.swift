@@ -30,6 +30,11 @@ class LoginViewModel {
                 } else {
                     self.router.dismissModule()
                     self.saveNewUser(email: login)
+                    Auth.auth().currentUser?.sendEmailVerification { (error) in
+                        if let e = error {
+                            print(e)
+                        }
+                    }
                 }
             }
         } else if title == "Авторизация" {

@@ -27,6 +27,7 @@ struct IFNS {
     
     func save(collectionName: String, id: String) {
         let db = Firestore.firestore()
-        db.collection("documents").document("CurrentUser").collection(collectionName).document(id).setData(["ifns" : ["title": title, "code": code, "address": address, "workHours": workHours, "phone": phone, "amount" : amount, "bank": bank, "bik": bik, "accountNumber": accountNumber, "receiverTitle": receiverTitle, "receiverInn": receiverInn, "receiverKpp": receiverKpp, "kbk": kbk, "oktmo": oktmo]], merge: true)
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        db.collection("documents").document(uid).collection(collectionName).document(id).setData(["ifns" : ["title": title, "code": code, "address": address, "workHours": workHours, "phone": phone, "amount" : amount, "bank": bank, "bik": bik, "accountNumber": accountNumber, "receiverTitle": receiverTitle, "receiverInn": receiverInn, "receiverKpp": receiverKpp, "kbk": kbk, "oktmo": oktmo]], merge: true)
     }
 }

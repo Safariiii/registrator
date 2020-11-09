@@ -7,13 +7,12 @@
 //
 
 import Foundation
-import FirebaseAuth
 
 class SelectViewModel {
     var router: SelectRouter!
     
-    func makeIpButtonPressed() {
-        router.chooseDocumentRoute(type: .makeIP)
+    func makeDocButtonPressed(tag: Int) {
+        router.chooseDocumentRoute(type: DocType.allCases[tag])
     }
     
     func deleteIpButtonPressed() {
@@ -24,12 +23,9 @@ class SelectViewModel {
         router.loginRoute()
     }
     
-    func logoutButtonPressed() {
-        do {
-            try Auth.auth().signOut()
-            goToLoginView()
-        } catch let signOutError as NSError {
-            print ("Error signing out: %@", signOutError)
+    func createButtons(action: @escaping((_ title: String, _ position: DocType.PositionInSelectView) -> Void)) {
+        for item in DocType.allCases {
+            action(item.title, item.position)
         }
     }
 }

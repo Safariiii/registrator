@@ -11,6 +11,7 @@ fileprivate let reg = "Регистрация"
 fileprivate let auth = "Авторизация"
 
 import UIKit
+import FirebaseAuth
 
 class LoginView: UIViewController {
     var viewModel: LoginViewModel?
@@ -50,6 +51,7 @@ class LoginView: UIViewController {
         tf.layer.borderWidth = 1.5
         tf.layer.borderColor = UIColor.separator.cgColor
         tf.backgroundColor = .white
+        tf.isSecureTextEntry = true
         return tf
     }()
     
@@ -83,7 +85,26 @@ class LoginView: UIViewController {
     }
     
     @objc func forgetButtonPressed() {
-        
+        let alert = UIAlertController(title: "Восстановление пароля", message: "Укажите адрес электронный почты с которого вы зарегистрировались. Ссылка для восстановления пароля будет отправлена на данный адрес", preferredStyle: .alert) //вызываем всплывающее окошко
+        alert.addTextField { (textField) in
+            textField.placeholder = "Введите e-mail"
+        }
+        let action = UIAlertAction(title: "Отмена", style: UIAlertAction.Style.cancel, handler: nil)
+        let action2 = UIAlertAction(title: "Отправить", style: .default) { (action) in
+            if let email = alert.textFields![0].text {
+                if email != "" {
+                    Auth.auth().sendPasswordReset(withEmail: alert.textFields![0].text!) { error in
+                        if let e = error {
+                            print(e.localizedDescription)
+                        }
+                    }
+                }
+            }
+            
+        }
+        alert.addAction(action2)
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
     }
     
     func setupView() {
@@ -91,7 +112,7 @@ class LoginView: UIViewController {
         view.backgroundColor = .white
         self.navigationItem.setHidesBackButton(true, animated: true)
         view.addSubview(segmentControl)
-        segmentControl.setupAnchors(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 150, left: 15, bottom: 0, right: -15))
+        segmentControl.setupAnchors(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 130, left: 15, bottom: 0, right: -15))
         view.addSubview(login)
         login.setupAnchors(top: segmentControl.bottomAnchor, leading: segmentControl.leadingAnchor, bottom: nil, trailing: segmentControl.trailingAnchor, padding: .init(top: 20, left: 0, bottom: 0, right: 0))
         view.addSubview(password)

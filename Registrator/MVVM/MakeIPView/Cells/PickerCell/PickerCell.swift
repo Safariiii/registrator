@@ -29,9 +29,12 @@ class PickerCell: TextFieldCell {
             pickerButton.isUserInteractionEnabled = false
             textField?.text = "Доступно только при выборе УСН"
         }
-        if viewModel.type == .taxesSystem  {
-            textField?.font = UIFont.systemFont(ofSize: 14)
+        if let note = viewModel.type.note {
             setupNotes()
+            noteLabel?.text = note
+        }
+        if viewModel.type == .taxesSystem || viewModel.type == .usnGiveTime  {
+            textField?.font = UIFont.systemFont(ofSize: 14)
             note?.removeTarget(self, action: #selector(notePressed), for: .touchUpInside)
             note?.addTarget(self, action: #selector(setupNoteView), for: .touchUpInside)
         }
@@ -60,7 +63,8 @@ class PickerCell: TextFieldCell {
     
     //MARK: - noteView
     @objc func setupNoteView() {
-        let noteView = NoteView()
+        guard let viewModel = viewModel else { return }
+        let noteView = NoteView(type: viewModel.type)
         let tableview = superview as! UITableView
         let vc = tableview.dataSource as? MakeIPViewController
         if let view = vc?.view {
@@ -71,9 +75,20 @@ class PickerCell: TextFieldCell {
 }
 
 extension PickerCell: UIPickerViewDelegate {
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        guard let viewModel = viewModel else { return nil }
-        return viewModel.titleForRowInPickerView(row: row)
+//    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+//        guard let viewModel = viewModel else { return nil }
+//        return viewModel.titleForRowInPickerView(row: row)
+//    }
+    
+
+    
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        guard let viewModel = viewModel else { return UIView() }
+        let label = UILabel(text: viewModel.titleForRowInPickerView(row: row), fontSize: 21, alignment: .center)
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
+
+        return label
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {

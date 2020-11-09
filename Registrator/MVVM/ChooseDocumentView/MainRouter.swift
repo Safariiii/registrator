@@ -39,6 +39,7 @@ class MainConfigurator {
             router = MainRouter()
             viewModel?.router = router
             view?.viewModel = viewModel
+            OKVEDManager().checkForUpdates()
         }
     }
 }

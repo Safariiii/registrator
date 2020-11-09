@@ -32,6 +32,7 @@ struct File {
     var okveds: [OKVED]?
     var mainOkved: [OKVED]?
     var ogrnip: String?
+    var usnGiveTime: String?
     
     let giveMethods = ["Лично", "По доверенности"]
     
@@ -107,6 +108,9 @@ struct File {
         }
         if okveds == [] {
             errors.append("Не выбран ни один код ОКВЭД")
+        }
+        if usnGiveTime == "" {
+            errors.append("Не указан момент перехода на УСН")
         }
         return errors
     }
@@ -191,6 +195,9 @@ struct File {
             return "\(txt[row].kod). \(txt[row].descr)"
         case "Метод":
             return giveMethods[row]
+        case "Момент перехода на УСН: ":
+            guard let txt = usnGiveTime else { return "" }
+            return txt
         default:
             return ""
         }

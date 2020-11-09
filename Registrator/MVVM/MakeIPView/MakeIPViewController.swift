@@ -15,19 +15,6 @@ class MakeIPViewController: UIViewController {
             initViewModel()
         }
     }
-    /*
-    var button = UIButton()
-    //button = nil
-    
-    weak var button1: UIButton?
-    unowned var button2: UIButton
-    button1 = button
-
-    button2 = button()
-    button = nil
-    
-    button2.setTitle()
- */
     
     func setupCell(indexPath: IndexPath) -> UITableViewCell {
         guard let viewModel = makeIPViewModel else { return UITableViewCell() }
@@ -93,7 +80,9 @@ class MakeIPViewController: UIViewController {
     func initViewModel() {
         guard let viewModel = makeIPViewModel else { return }
         viewModel.reloadHandler = { [weak self] in
-            self?.tableView.reloadData()
+            DispatchQueue.main.async {
+               self?.tableView.reloadData()
+            }
         }
         viewModel.addSatusView = { [weak self] view in
             DispatchQueue.main.async {
@@ -102,7 +91,6 @@ class MakeIPViewController: UIViewController {
         }
         viewModel.showStatusAlert = { [weak self] title, message in
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-//            let action = UIAlertAction(title: "ok", style: UIAlertAction.Style.cancel, handler: nil)
             let action = UIAlertAction(title: "ok", style: .default) { (action) in
                 if title != "Ошибка" {
                     self?.navigationController?.popViewController(animated: true)

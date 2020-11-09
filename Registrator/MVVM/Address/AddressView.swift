@@ -128,17 +128,16 @@ extension AddressView: UITableViewDelegate {
         guard let viewModel = viewModel else { return }
         tableView.deselectRow(at: indexPath, animated: true)
         if viewModel.step == .search {
-            viewModel.didSelectRowAt(row: indexPath.row)
-            if viewModel.dataArr.count == 1 {
-                viewModel.parseAddress(text: viewModel.dataArr[0].strValue) { [weak self] in
-                    self?.tableView.reloadData()
-                }
-            }
+            viewModel.didSelectRowAt(row: indexPath.row, completion: { [weak self] in
+                self?.tableView.reloadData()
+            })
             segmentControl.selectedSegmentIndex = segmentControl.selectedSegmentIndex == 0 ? 1 : 0
             secondSegmentActive()
         } else {
-            viewModel.didSelectRowAt(row: indexPath.row)
-            tableView.reloadData()
+            viewModel.didSelectRowAt(row: indexPath.row, completion: { [weak self] in
+                self?.tableView.reloadData()
+            })
+            
         }
     }
 }

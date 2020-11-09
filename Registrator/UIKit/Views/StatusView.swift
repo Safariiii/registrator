@@ -6,16 +6,22 @@
 //  Copyright © 2020 Руслан Сафаргалеев. All rights reserved.
 //
 
-fileprivate let statusTitle = "Идет подготовка и отправка документов..."
+enum StatusType: String {
+    case send = "Идет подготовка и отправка документов..."
+    case okvedUpdate = "Идет обновление кодов ОКВЭД. Это займет не более 1 минуты"
+}
 
 import UIKit
 
 class StatusView: UIView {
+    
+    var status: StatusType
 
-    init() {
+    init(status: StatusType) {
+        self.status = status
         super.init(frame: .zero)
         backgroundColor = .systemGray5
-        alpha = 0.5
+        alpha = 0.8
     }
     
     required init?(coder: NSCoder) {
@@ -30,7 +36,8 @@ class StatusView: UIView {
     let indicator = UIActivityIndicatorView(style: .large)
     
     lazy var statusLabel: UILabel = {
-        let label = UILabel(text: statusTitle, fontSize: 15, alignment: .center, numberOfLines: 1)
+        let label = UILabel(fontSize: 15, alignment: .center, numberOfLines: 0)
+        label.text = self.status.rawValue
         return label
     }()
     
@@ -39,7 +46,7 @@ class StatusView: UIView {
         indicator.setupAnchors(top: nil, leading: nil, bottom: nil, trailing: nil, centerX: centerXAnchor, centerY: centerYAnchor)
         indicator.startAnimating()
         addSubview(statusLabel)
-        statusLabel.setupAnchors(top: nil, leading: nil, bottom: indicator.topAnchor, trailing: nil, centerX: centerXAnchor, padding: .init(top: 0, left: 0, bottom: -25, right: 0))
+        statusLabel.setupAnchors(top: nil, leading: leadingAnchor, bottom: indicator.topAnchor, trailing: trailingAnchor, centerX: centerXAnchor, padding: .init(top: 0, left: 0, bottom: -25, right: 0))
         
     }
     

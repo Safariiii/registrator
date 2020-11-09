@@ -16,6 +16,7 @@ enum Step: Int, CaseIterable {
     case step4 = 3
     case step5 = 4
     case step10 = 9
+    case step20 = 19
     
     
     static var okveds: [OKVED] = []
@@ -44,7 +45,7 @@ enum Step: Int, CaseIterable {
             return "Шаг 4: Налогообложение"
         case .step5:
             return "Шаг 5: Способ подачи документов"
-        case .step10:
+        case .step10, .step20:
             return "Информация об ИП"
         }
     }
@@ -72,6 +73,8 @@ enum Step: Int, CaseIterable {
             return [.giveMethod, .giveMethod, .buy]
         case .step10:
             return [.inn, .ogrnip, .lastName, .firstName, .middleName, .sex, .citizenship, .address, .email, .phoneNumber, .buy]
+        case .step20:
+            return [.inn, .lastName, .firstName, .middleName, .address, .usnGiveTime, .taxesRate, .email, .buy]
         }
     }
 }
