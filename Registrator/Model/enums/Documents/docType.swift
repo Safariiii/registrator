@@ -8,6 +8,7 @@
 
 import Foundation
 import Firebase
+import Alamofire
 
 enum DocType: String, CaseIterable {
     case makeIP = "Документы на регистрацию ИП"
@@ -138,6 +139,61 @@ enum DocType: String, CaseIterable {
             }
             if let data = snapshot.data() {
                 completion(self.createNewFile(data: data))
+            }
+        }
+    }
+    
+    func findFNS(id: String, code: String) {
+        guard let url = URL(string: "https://service.nalog.ru/addrno-proc.json") else { return }
+        switch self {
+        case .makeIP, .deleteIP:
+            Alamofire.request(url, method: .post, parameters: getParameters(code: code)).responseJSON { (response) in
+                if response.result.isSuccess {
+                    if let response = response.result.value as? [String: Any] {
+                        let dataModel = IFNSData()
+                        guard let decodedData = Request.ifns.getDecodedData(jsonObject: response, dataModel: dataModel) else { return }
+                        guard let parentCode = decodedData.sprofDetails?.ifnsCode else { return }
+                        self.makeFNSRequest(id: id, code: parentCode, url: url)
+                    }
+                    
+                }
+            }
+        case .usn:
+            makeFNSRequest(id: id, code: code, url: url)
+        }
+    }
+    
+    private func getParameters(code: String) -> [String : Any] {
+        return [
+            "c": "next",
+            "step": "1",
+            "npKind": "fl",
+            "ifns": code
+        ]
+    }
+    
+    private func makeFNSRequest(id: String, code: String, url: URL) {
+        Alamofire.request(url, method: .post, parameters: getParameters(code: code)).responseJSON { (response) in
+            let responseType = Request.ifns
+            if response.result.isSuccess {
+                if let response = response.result.value as? [String: Any] {
+                    let dataModel = IFNSData()
+                    guard let decodedData = responseType.getDecodedData(jsonObject: response, dataModel: dataModel) else { return }
+                    let ifnsDetails = decodedData.ifnsDetails
+                    let payeeDetails = decodedData.payeeDetails
+                    var newIFNS = IFNS(ifnsDetails: ifnsDetails, payeeDetails: payeeDetails, docType: self)
+                    guard let request = responseType.getRequest(text: newIFNS.address) else { return }
+                    Alamofire.request(request).responseJSON { (response) in
+                        if response.result.isSuccess {
+                            if let response = response.result.value as? [String: Any] {
+                                let dataModel = DadataData(suggestions: [])
+                                guard let decodedData = responseType.getDecodedData(jsonObject: response, dataModel: dataModel) else { return }
+                                newIFNS.oktmo = decodedData.suggestions[0].data.oktmo ?? ""
+                                newIFNS.save(collectionName: self.collectionName, id: id)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

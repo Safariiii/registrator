@@ -10,27 +10,60 @@ import Foundation
 import Firebase
 
 struct Address {
-    var index = ""
-    var region = ""
-    var regionCode = ""
-    var regionFiasId = ""
-    var areaType = ""
-    var area = ""
+    
+    init(item: Registrator.Data?, suggestion: Suggestions?, type: Request) {
+        var strValue = ""
+        switch type {
+        case .addressNote:
+            strValue = suggestion?.unrestrictedValue ?? ""
+        case .addressParse:
+            strValue = item?.result ?? ""
+        case .ifns, .none:
+            break
+        }
+        self.index = item?.postalCode ?? ""
+        self.region = item?.regionWithType ?? ""
+        self.regionCode = item?.regionKladrId ?? ""
+        self.regionFiasId = item?.regionFiasId ?? ""
+        self.areaType = item?.areaType ?? ""
+        self.area = item?.area ?? ""
+        self.cityType = item?.cityType ?? ""
+        self.city = item?.city ?? ""
+        self.villageType = item?.settlementType ?? ""
+        self.village = item?.settlement ?? ""
+        self.streetType = item?.streetType ?? ""
+        self.street = item?.street ?? ""
+        self.houseType = item?.houseTypeFull ?? ""
+        self.house = item?.house ?? ""
+        self.housingType = item?.blockTypeFull ?? ""
+        self.housing = item?.block ?? ""
+        self.appartementType = item?.flatTypeFull ?? ""
+        self.appartement = item?.flat ?? ""
+        self.fns = item?.taxOfficeLegal ?? ""
+        self.strValue = strValue
+    }
+    
+    var index: String
+    var region: String
+    var regionCode: String
+    var regionFiasId: String
+    var areaType: String
+    var area: String
     var isAreaNeed = "Yes"
-    var cityType = ""
-    var city = ""
-    var villageType = ""
-    var village = ""
-    var streetType = ""
-    var street = ""
-    var houseType = ""
-    var house = ""
-    var housingType = ""
-    var housing = ""
-    var appartementType = ""
-    var appartement = ""
-    var fns = ""
-    var strValue = ""
+    var cityType: String
+    var city: String
+    var villageType: String
+    var village: String
+    var streetType: String
+    var street: String
+    var houseType: String
+    var house: String
+    var housingType: String
+    var housing: String
+    var appartementType: String
+    var appartement: String
+    var fns: String
+    var strValue: String
     
     func save(id: String, collectionName: String) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
@@ -68,20 +101,20 @@ struct Address {
         case .region:
             return region
         case .area:
-            return areaType + " " + area
+            return areaType + " " + area == " " ? "" : areaType + " " + area
         case .city:
-            return cityType + " " + city
+            return cityType + " " + city == " " ? "" : cityType + " " + city
         case .village:
-            return villageType + " " + village
+            return villageType + " " + village == " " ? "" : villageType + " " + village
         case .street:
-            return streetType + " " + street
+            return streetType + " " + street == " " ? "" : streetType + " " + street
         case .house:
-            return houseType + " " + house
+            return houseType + " " + house == " " ? "" : houseType + " " + house
         case .housing:
-            return housingType + " " + housing
+            return housingType + " " + housing == " " ? "" : housingType + " " + housing
         case .appartement:
-            return appartementType + " " + appartement
-        case .none, .save:
+            return appartementType + " " + appartement == " " ? "" : appartementType + " " + appartement
+        case .none, .save, .parsed:
             return ""
         }
     }

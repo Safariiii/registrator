@@ -23,6 +23,9 @@ class SelectViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        
+//        let responseType = Response.addressParse
+//        print(responseType.getObject(a: Address()))
     }
     
     func setupView() {

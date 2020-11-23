@@ -66,6 +66,9 @@
 		A0B6B8A1252D27D90078C383 /* TaxesSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B6B8A0252D27D90078C383 /* TaxesSystem.swift */; };
 		A0C0237B251B6C43000B871E /* String+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C0237A251B6C43000B871E /* String+extension.swift */; };
 		A0C0237F251B8BC8000B871E /* View+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C0237E251B8BC8000B871E /* View+extension.swift */; };
+		A0C0A3112567398B00B951B9 /* IFNSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C0A3102567398B00B951B9 /* IFNSData.swift */; };
+		A0C0A31325676BF600B951B9 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C0A31225676BF600B951B9 /* Request.swift */; };
+		A0C0A317256BA15400B951B9 /* AddressLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C0A316256BA15400B951B9 /* AddressLevel.swift */; };
 		A0CFD7B324CD825F00243FF5 /* DatePickerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CFD7B224CD825F00243FF5 /* DatePickerDelegate.swift */; };
 		A0E1CF0424EBC9FA00241C4B /* OKVED.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E1CF0324EBC9F900241C4B /* OKVED.swift */; };
 		A0E2D5382496269100421B78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E2D5372496269100421B78 /* AppDelegate.swift */; };
@@ -151,6 +154,9 @@
 		A0B6B8A0252D27D90078C383 /* TaxesSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaxesSystem.swift; sourceTree = "<group>"; };
 		A0C0237A251B6C43000B871E /* String+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+extension.swift"; sourceTree = "<group>"; };
 		A0C0237E251B8BC8000B871E /* View+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+extension.swift"; sourceTree = "<group>"; };
+		A0C0A3102567398B00B951B9 /* IFNSData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IFNSData.swift; sourceTree = "<group>"; };
+		A0C0A31225676BF600B951B9 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
+		A0C0A316256BA15400B951B9 /* AddressLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressLevel.swift; sourceTree = "<group>"; };
 		A0CFD7B224CD825F00243FF5 /* DatePickerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerDelegate.swift; sourceTree = "<group>"; };
 		A0E1CF0324EBC9F900241C4B /* OKVED.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OKVED.swift; sourceTree = "<group>"; };
 		A0E2D5342496269100421B78 /* Registrator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Registrator.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -287,14 +293,8 @@
 		A0353EE92525F03500698C80 /* enums */ = {
 			isa = PBXGroup;
 			children = (
-				A0353EEC2525F0B100698C80 /* Step.swift */,
-				A0353EEE2525F0BF00698C80 /* TextFieldType.swift */,
-				A0353EF02525F59E00698C80 /* TextFieldGroup.swift */,
-				A0353EF22526414100698C80 /* ValidateType.swift */,
-				A0B6B8A0252D27D90078C383 /* TaxesSystem.swift */,
-				A055DA8C253389EF00AB223D /* AddressType.swift */,
-				A055DA8E25338FF300AB223D /* AddressStep.swift */,
-				A09A34F12534E78F00E29DB8 /* docType.swift */,
+				A0C0A3152567A77600B951B9 /* Address */,
+				A0C0A3142567A75100B951B9 /* Documents */,
 			);
 			path = enums;
 			sourceTree = "<group>";
@@ -445,6 +445,30 @@
 			path = extensions;
 			sourceTree = "<group>";
 		};
+		A0C0A3142567A75100B951B9 /* Documents */ = {
+			isa = PBXGroup;
+			children = (
+				A09A34F12534E78F00E29DB8 /* docType.swift */,
+				A0353EEC2525F0B100698C80 /* Step.swift */,
+				A0353EF02525F59E00698C80 /* TextFieldGroup.swift */,
+				A0353EEE2525F0BF00698C80 /* TextFieldType.swift */,
+				A0B6B8A0252D27D90078C383 /* TaxesSystem.swift */,
+				A0353EF22526414100698C80 /* ValidateType.swift */,
+			);
+			path = Documents;
+			sourceTree = "<group>";
+		};
+		A0C0A3152567A77600B951B9 /* Address */ = {
+			isa = PBXGroup;
+			children = (
+				A055DA8C253389EF00AB223D /* AddressType.swift */,
+				A055DA8E25338FF300AB223D /* AddressStep.swift */,
+				A0C0A31225676BF600B951B9 /* Request.swift */,
+				A0C0A316256BA15400B951B9 /* AddressLevel.swift */,
+			);
+			path = Address;
+			sourceTree = "<group>";
+		};
 		A0C29FD824C9EA5E00A202B8 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -455,6 +479,7 @@
 				A0E1CF0324EBC9F900241C4B /* OKVED.swift */,
 				A0A9C665251A7A3500D9BD55 /* File.swift */,
 				A020DC05253EEB2A005B87AF /* IFNS.swift */,
+				A0C0A3102567398B00B951B9 /* IFNSData.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -649,6 +674,7 @@
 				56C6B51E252376E70061F4FD /* MakeIPRouter.swift in Sources */,
 				A09A5A34251FB8CC00136EF8 /* makeIpSectionView.swift in Sources */,
 				A0E2D53C2496269100421B78 /* ViewController.swift in Sources */,
+				A0C0A3112567398B00B951B9 /* IFNSData.swift in Sources */,
 				A09A5A3C251FD81A00136EF8 /* TextFieldView.swift in Sources */,
 				A0353ED92524DAE200698C80 /* NextButtonCell.swift in Sources */,
 				A0AA563924D1A87600AD6421 /* ChooseDocumentViewControllerCell.swift in Sources */,
@@ -680,6 +706,7 @@
 				A09A34F425372AD700E29DB8 /* StatusView.swift in Sources */,
 				A07EB89E2544997A004E5CE1 /* LoginViewModel.swift in Sources */,
 				A0F6850D25248C1A007245A9 /* TextCell.swift in Sources */,
+				A0C0A317256BA15400B951B9 /* AddressLevel.swift in Sources */,
 				A05B33A3252DE96E003522E4 /* AddressViewModel.swift in Sources */,
 				A0583A262530D70E00BF10BA /* AddressRouter.swift in Sources */,
 				A0A9C666251A7A3500D9BD55 /* File.swift in Sources */,
@@ -696,6 +723,7 @@
 				5600BF822500004600453C22 /* DocumentView.swift in Sources */,
 				A0AA563F24D1E56D00AD6421 /* Document.swift in Sources */,
 				A09A5A36251FBD5400136EF8 /* OkvedSectionView.swift in Sources */,
+				A0C0A31325676BF600B951B9 /* Request.swift in Sources */,
 				A0339BD024C9EC710082F693 /* MakeIPViewModel.swift in Sources */,
 				A0353EDD2524F61B00698C80 /* TextFieldCell.swift in Sources */,
 				A09A5A402520F2DB00136EF8 /* DatePickerView.swift in Sources */,

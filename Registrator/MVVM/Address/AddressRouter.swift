@@ -46,8 +46,9 @@ class AddressConfigurator {
         viewModel?.router = router
         view?.viewModel = viewModel
         view?.searchBar.text = address
-        view?.viewModel?.getNote(text: address, completion: {
-            self.view?.tableView.reloadData()
-        })
+        AddressStep.searchCount = 0
+        Request.addressNote.getNote(text: address) { [weak self] (data) in
+            self?.viewModel?.dataArr = data
+        }
     }
 }

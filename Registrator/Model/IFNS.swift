@@ -10,6 +10,23 @@ import Foundation
 import Firebase
 
 struct IFNS {
+    
+    init(ifnsDetails: IfnsDetails?, payeeDetails: PayeeDetails?, docType: DocType) {
+        self.address = ifnsDetails?.ifnsAddr ?? ""
+        self.title = ifnsDetails?.ifnsName ?? ""
+        self.workHours = ifnsDetails?.ifnsComment ?? ""
+        self.phone = ifnsDetails?.ifnsPhone ?? ""
+        self.code = ifnsDetails?.ifnsCode ?? ""
+        self.amount = docType.dutyAmount
+        self.bank = payeeDetails?.bankName ?? ""
+        self.bik = payeeDetails?.bankBic ?? ""
+        self.accountNumber = payeeDetails?.payeeAcc ?? ""
+        self.receiverTitle = payeeDetails?.payeeName?.replacingOccurrences(of: "Управление Федерального казначейства", with: "УФК").replacingOccurrences(of: "Межрайонная инспекция Федеральной налоговой службы", with: "МИФНС России") ?? ""
+        self.receiverInn = payeeDetails?.payeeInn ?? ""
+        self.receiverKpp = payeeDetails?.payeeKpp ?? ""
+        self.kbk = docType.kbk
+    }
+    
     var address = ""
     var title = ""
     var workHours = ""

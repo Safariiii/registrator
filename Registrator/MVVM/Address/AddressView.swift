@@ -24,6 +24,14 @@ class AddressView: UIViewController {
         setupSegmentControl()
         setupSearchBar()
         setupTableView()
+        initViewModel()
+    }
+    
+    func initViewModel() {
+        guard let viewModel = viewModel else { return }
+        viewModel.subscribeToSearchBar(searchBar: searchBar) { [weak self] in
+            self?.tableView.reloadData()
+        }
     }
 
     
@@ -154,15 +162,6 @@ extension AddressView: UISearchBarDelegate {
         newView.removeFromSuperview()
         DispatchQueue.main.async {
             self.searchBar.resignFirstResponder()
-        }
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        guard let viewModel = viewModel else { return }
-        if let text = searchBar.text, text != "" {
-            viewModel.getNote(text: searchText) { [weak self] in
-                self?.tableView.reloadData()
-            }
         }
     }
 }
