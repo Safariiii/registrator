@@ -11,16 +11,12 @@ import Foundation
 class AddressCellViewModel {
     let title: String
     let text: String
-    let step: AddressStep
     let note: String?
-    let isAreaNeed: Bool
     let type: AddressType
-    init(title: String, text: String, step: AddressStep, note: String?, isAreaNeed: Bool, type: AddressType) {
+    init(title: String, text: String, note: String?, type: AddressType) {
         self.title = title
         self.text = text
-        self.step = step
         self.note = note
-        self.isAreaNeed = isAreaNeed
         self.type = type
     }
 }

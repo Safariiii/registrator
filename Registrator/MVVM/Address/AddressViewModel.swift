@@ -13,62 +13,152 @@ import RxCocoa
 
 class AddressVeiwModel {
 
-    var dataArr: [Address] = []
-    var step = AddressStep.search
+    var dataArr: [FiasData]?
     var chosenAddress: Address?
     let id: String
-    var router: AddressRouter!
+    var router: AddressRouter?
     let docType: DocType
     let disposeBag = DisposeBag()
+    var addressType: AddressType = .region
+    let fields: [AddressType] = [.region, .town, .street]
+    
     
     init(id: String, docType: DocType) {
         self.id = id
         self.docType = docType
     }
     
-    func subscribeToSearchBar(searchBar: UISearchBar, completion: @escaping (() -> Void)) {
-        searchBar.rx.value.subscribe(onNext: { [weak self] (text) in
-            guard let text = text else { return }
-            Request.addressNote.getNote(text: text) { [weak self] (data) in
-                self?.dataArr = data
-                AddressStep.searchCount = data.count
-                completion()
-            }
-        }).disposed(by: disposeBag)
-    }
-    
-    func changeStep() {
-        step.changeStep()
-    }
-    
     var numberOfRows: Int {
-        return step.fields.count
+        return AddressType.allCases.count
+    }
+    
+    var numberOfSections: Int {
+        AddressType.allCases.count
+    }
+    
+    func titleForRowInPickerView(row: Int) -> String {
+        if let data = dataArr {
+            return data[row].PresentRow!
+        } else {
+            return regions[row]
+        }
+    }
+    
+    var numberOfRowsInComponent: Int {
+        return regions.count
+    }
+    
+    func didSelectRowInPickerView(row: Int, completion: @escaping(() -> Void)) {
+        addressType.makeSearchRequest(text: regions[row]) { [weak self] (data) in
+            self?.dataArr = data
+            completion()
+        }
     }
     
     func didSelectRowAt(row: Int, completion: @escaping(() -> Void)) {
-        guard let address = step == .search ? dataArr[row] : chosenAddress else { return }
-        step.fields[row].didSelectRow(address: address, id: id, docType: docType) { [weak self] (address) in
-            if let newAdr = address {
-                self?.chosenAddress = newAdr
-                self?.changeStep()
-                completion()
-            } else {
-                self?.router.dismissModule()
-            }
-        }
+//        guard let address = step == .search ? dataArr[row] : chosenAddress else { return }
+//        step.fields[row].didSelectRow(address: address, id: id, docType: docType) { [weak self] (address) in
+//            if let newAdr = address {
+//                self?.chosenAddress = newAdr
+//                completion()
+//            } else {
+//                self?.router.dismissModule()
+//            }
+//        }
     }
     
     func cellViewModel(for indexPath: IndexPath) -> AddressCellViewModel? {
-        let item = step.fields[indexPath.row]
+        let item = AddressType.allCases[indexPath.row]
         var text = ""
-        if step == .search {
-            text = dataArr[indexPath.row].strValue
-        } else {
-            if let address = chosenAddress {
-                text = address.cellText(type: item)
-            }
-        }
-        let isAreaNeed = chosenAddress?.isAreaNeed == "Yes" ? true : false
-        return AddressCellViewModel(title: item.rawValue, text: text, step: step, note: item.note, isAreaNeed: isAreaNeed, type: item)
+        return AddressCellViewModel(title: item.rawValue, text: text, note: item.note, type: item)
     }
 }
+
+fileprivate let regions = [
+    "Алтайский край",
+    "Амурская область",
+    "Архангельская область",
+    "Астраханская область",
+    "Белгородская область",
+    "Брянская область",
+    "Владимирская область",
+    "Волгоградская область",
+    "Вологодская область",
+    "Воронежская область",
+    "г. Москва",
+    "Еврейская автономная область",
+    "Забайкальский край",
+    "Ивановская область",
+    "Иные территории, включая город и космодром Байконур",
+    "Иркутская область",
+    "Кабардино-Балкарская Республика",
+    "Калининградская область",
+    "Калужская область",
+    "Камчатский край",
+    "Карачаево-Черкесская Республика",
+    "Кемеровская область - Кузбасс",
+    "Кировская область",
+    "Костромская область",
+    "Краснодарский край",
+    "Красноярский край",
+    "Курганская область",
+    "Курская область",
+    "Ленинградская область",
+    "Липецкая область",
+    "Магаданская область",
+    "Московская область",
+    "Мурманская область",
+    "Ненецкий автономный округ",
+    "Нижегородская область",
+    "Новгородская область",
+    "Новосибирская область",
+    "Омская область",
+    "Оренбургская область",
+    "Орловская область",
+    "Пензенская область",
+    "Пермский край",
+    "Приморский край",
+    "Псковская область",
+    "Республика Адыгея (Адыгея)",
+    "Республика Алтай",
+    "Республика Башкортостан",
+    "Республика Бурятия",
+    "Республика Дагестан",
+    "Республика Ингушетия",
+    "Республика Калмыкия",
+    "Республика Карелия",
+    "Республика Коми",
+    "Республика Крым",
+    "Республика Марий Эл",
+    "Республика Мордовия",
+    "Республика Саха (Якутия)",
+    "Республика Северная Осетия - Алания",
+    "Республика Татарстан (Татарстан)",
+    "Республика Тыва",
+    "Республика Хакасия",
+    "Ростовская область",
+    "Рязанская область",
+    "Самарская область",
+    "Санкт-Петербург",
+    "Саратовская область",
+    "Сахалинская область",
+    "Свердловская область",
+    "Севастополь",
+    "Смоленская область",
+    "Ставропольский край",
+    "Тамбовская область",
+    "Тверская область",
+    "Томская область",
+    "Тульская область",
+    "Тюменская область",
+    "Удмуртская Республика",
+    "Ульяновская область",
+    "Хабаровский край",
+    "Ханты-Мансийский автономный округ - Югра",
+    "Челябинская область",
+    "Чеченская Республика",
+    "Чувашская Республика - Чувашия",
+    "Чукотский автономный округ",
+    "Ямало-Ненецкий автономный округ",
+    "Ярославская область"
+]

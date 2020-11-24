@@ -21,7 +21,6 @@ struct Address {
         case .ifns, .none:
             break
         }
-        self.index = item?.postalCode ?? ""
         self.region = item?.regionWithType ?? ""
         self.regionCode = item?.regionKladrId ?? ""
         self.regionFiasId = item?.regionFiasId ?? ""
@@ -43,7 +42,6 @@ struct Address {
         self.strValue = strValue
     }
     
-    var index: String
     var region: String
     var regionCode: String
     var regionFiasId: String
@@ -69,7 +67,6 @@ struct Address {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
         var addressToSave: [String : String] = [:]
-        addressToSave["index"] = index
         addressToSave["regionCode"] = regionCode[0..<2]
         addressToSave["areaType"] = areaType
         addressToSave["area"] = area
@@ -96,8 +93,6 @@ struct Address {
     
     func cellText(type: AddressType) -> String {
         switch type {
-        case .index:
-            return index
         case .region:
             return region
         case .area:
@@ -114,7 +109,7 @@ struct Address {
             return housingType + " " + housing == " " ? "" : housingType + " " + housing
         case .appartement:
             return appartementType + " " + appartement == " " ? "" : appartementType + " " + appartement
-        case .none, .save, .parsed:
+        case .none, .save, .town:
             return ""
         }
     }

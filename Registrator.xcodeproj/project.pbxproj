@@ -33,7 +33,6 @@
 		A044154F252BC6F8003F0DBF /* SelectRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A044154E252BC6F8003F0DBF /* SelectRouter.swift */; };
 		A0441551252BE15D003F0DBF /* UILabelPadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0441550252BE15D003F0DBF /* UILabelPadding.swift */; };
 		A055DA8D253389EF00AB223D /* AddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055DA8C253389EF00AB223D /* AddressType.swift */; };
-		A055DA8F25338FF300AB223D /* AddressStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055DA8E25338FF300AB223D /* AddressStep.swift */; };
 		A055DA91253440F700AB223D /* NoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A055DA90253440F700AB223D /* NoteView.swift */; };
 		A0583A262530D70E00BF10BA /* AddressRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0583A252530D70E00BF10BA /* AddressRouter.swift */; };
 		A05B339E252DCB1C003522E4 /* AddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05B339D252DCB1C003522E4 /* AddressView.swift */; };
@@ -121,7 +120,6 @@
 		A044154E252BC6F8003F0DBF /* SelectRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectRouter.swift; sourceTree = "<group>"; };
 		A0441550252BE15D003F0DBF /* UILabelPadding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelPadding.swift; sourceTree = "<group>"; };
 		A055DA8C253389EF00AB223D /* AddressType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressType.swift; sourceTree = "<group>"; };
-		A055DA8E25338FF300AB223D /* AddressStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressStep.swift; sourceTree = "<group>"; };
 		A055DA90253440F700AB223D /* NoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteView.swift; sourceTree = "<group>"; };
 		A0583A252530D70E00BF10BA /* AddressRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressRouter.swift; sourceTree = "<group>"; };
 		A05B339D252DCB1C003522E4 /* AddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressView.swift; sourceTree = "<group>"; };
@@ -462,7 +460,6 @@
 			isa = PBXGroup;
 			children = (
 				A055DA8C253389EF00AB223D /* AddressType.swift */,
-				A055DA8E25338FF300AB223D /* AddressStep.swift */,
 				A0C0A31225676BF600B951B9 /* Request.swift */,
 				A0C0A316256BA15400B951B9 /* AddressLevel.swift */,
 			);
@@ -730,7 +727,6 @@
 				A0E9768B24E3278B00E8BB24 /* OkvedTableViewViewModel.swift in Sources */,
 				A07EB89925449451004E5CE1 /* LoginView.swift in Sources */,
 				A05B33A5252DF2E8003522E4 /* AddressCell.swift in Sources */,
-				A055DA8F25338FF300AB223D /* AddressStep.swift in Sources */,
 				A0607B3724DC475300EB8B7C /* OKVEDManager.swift in Sources */,
 				A044154C252BC6DD003F0DBF /* SelectViewModel.swift in Sources */,
 				A0006A642527790E00C92DFD /* AddOkvedViewModel.swift in Sources */,

@@ -9,5 +9,5 @@
 import Foundation
 
 enum AddressLevel: Int, CaseIterable {
-    case 
+    case first = 0
 }

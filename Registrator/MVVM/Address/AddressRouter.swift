@@ -45,10 +45,5 @@ class AddressConfigurator {
         router = AddressRouter()
         viewModel?.router = router
         view?.viewModel = viewModel
-        view?.searchBar.text = address
-        AddressStep.searchCount = 0
-        Request.addressNote.getNote(text: address) { [weak self] (data) in
-            self?.viewModel?.dataArr = data
-        }
     }
 }

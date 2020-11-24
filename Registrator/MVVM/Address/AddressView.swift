@@ -21,60 +21,16 @@ class AddressView: UIViewController {
     
     override func viewDidLoad() {
         view.backgroundColor = .white
-        setupSegmentControl()
-        setupSearchBar()
         setupTableView()
         initViewModel()
     }
     
     func initViewModel() {
         guard let viewModel = viewModel else { return }
-        viewModel.subscribeToSearchBar(searchBar: searchBar) { [weak self] in
-            self?.tableView.reloadData()
-        }
+
     }
 
     
-    //MARK: - SegmentControl
-    lazy var segmentControl: UISegmentedControl = {
-        let sc = UISegmentedControl(items: [firstItemTitle, secondItemTitle])
-        sc.selectedSegmentIndex = 0
-        sc.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        sc.addTarget(self, action: #selector(segmentControlChanged), for: .valueChanged)
-        return sc
-    }()
-    
-    func setupSegmentControl() {
-        view.addSubview(segmentControl)
-        segmentControl.setupAnchors(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor)
-    }
-    
-    @objc func segmentControlChanged(sender: UISegmentedControl) {
-        guard let viewModel = viewModel else { return }
-        viewModel.changeStep()
-        if sender.selectedSegmentIndex == 0 {
-            firstSegmentActive()
-        } else {
-            secondSegmentActive()
-        }
-    }
-    
-    func firstSegmentActive() {
-        searchBar.isHidden = false
-        tableViewTopAnchor?.isActive = false
-        tableViewTopAnchor = tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor)
-        tableViewTopAnchor?.isActive = true
-        tableView.reloadData()
-        
-    }
-    
-    func secondSegmentActive() {
-        searchBar.isHidden = true
-        tableViewTopAnchor?.isActive = false
-        tableViewTopAnchor = tableView.topAnchor.constraint(equalTo: segmentControl.bottomAnchor)
-        tableViewTopAnchor?.isActive = true
-        tableView.reloadData()
-    }
     
     //MARK: - TableView
     
@@ -89,24 +45,19 @@ class AddressView: UIViewController {
     
     func setupTableView() {
         view.addSubview(tableView)
-        tableViewTopAnchor = tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor)
+        tableViewTopAnchor = tableView.topAnchor.constraint(equalTo: view.topAnchor)
         tableViewTopAnchor?.isActive = true
         tableView.setupAnchors(top: nil, leading: view.leadingAnchor, bottom: view.bottomAnchor, trailing: view.trailingAnchor)
     }
     
-    //MARK: - SeacrchBar
-    
-    lazy var searchBar: UISearchBar = {
-        let sb = UISearchBar()
-        sb.searchTextField.placeholder = searchBarPlaceholder
-        sb.delegate = self
-        return sb
-    }()
-    
-    func setupSearchBar() {
-        view.addSubview(searchBar)
-        searchBar.setupAnchors(top: segmentControl.bottomAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor)
+    //MARK:  - PickerView
+    var pickerView: PickerView {
+        let picker = PickerView()
+        picker.delegate = self
+        picker.dataSource = self
+        return picker
     }
+    
 }
 
 extension AddressView: UITableViewDataSource {
@@ -114,6 +65,7 @@ extension AddressView: UITableViewDataSource {
         guard let viewModel = viewModel else { return 0 }
         return viewModel.numberOfRows
     }
+
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let viewModel = viewModel, let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as? AddressCell else { return UITableViewCell() }
@@ -125,7 +77,7 @@ extension AddressView: UITableViewDataSource {
 extension AddressView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let viewModel = viewModel else { return UIView() }
-        return AddressSectionView(type: viewModel.step)
+        return AddressSectionView(type: viewModel.fields[section])
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -134,19 +86,8 @@ extension AddressView: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let viewModel = viewModel else { return }
-        tableView.deselectRow(at: indexPath, animated: true)
-        if viewModel.step == .search {
-            viewModel.didSelectRowAt(row: indexPath.row, completion: { [weak self] in
-                self?.tableView.reloadData()
-            })
-            segmentControl.selectedSegmentIndex = segmentControl.selectedSegmentIndex == 0 ? 1 : 0
-            secondSegmentActive()
-        } else {
-            viewModel.didSelectRowAt(row: indexPath.row, completion: { [weak self] in
-                self?.tableView.reloadData()
-            })
-            
-        }
+        viewModel.addressType = AddressType.allCases[indexPath.row]
+        view.addSubview(pickerView)
     }
 }
 
@@ -160,8 +101,35 @@ extension AddressView: UISearchBarDelegate {
     
     @objc func dismissKeyboard() {
         newView.removeFromSuperview()
-        DispatchQueue.main.async {
-            self.searchBar.resignFirstResponder()
+
+    }
+}
+
+extension AddressView: UIPickerViewDelegate {
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        guard let viewModel = viewModel else { return UIView() }
+        let label = UILabel(text: viewModel.titleForRowInPickerView(row: row), fontSize: 21, alignment: .center)
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
+
+        return label
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        guard let viewModel = viewModel else { return }
+        viewModel.didSelectRowInPickerView(row: row) { [weak self] in
+            self?.tableView.reloadData()
         }
+    }
+}
+
+extension AddressView: UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        guard let viewModel = viewModel else { return 0 }
+        return viewModel.numberOfRowsInComponent
     }
 }

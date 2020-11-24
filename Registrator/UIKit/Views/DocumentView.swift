@@ -42,6 +42,7 @@ class DocumentView: UIView {
         setupHelpTextLabel()
         setupSecondHelpTextLabel()
         setupBeginButton()
+        return
     }
     
     required init?(coder: NSCoder) {
